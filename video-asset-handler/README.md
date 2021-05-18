@@ -1,0 +1,27 @@
+Sean's Video Handler
+=============
+This project uses Cats Effect 3, Cats, Http4s and Decline
+
+## Components Overview
+Here's an overview of the three different components that make this application.
+
+- VideoAssetHandlerApp : Main terminal app.
+- VideoEnquirer : It downloads a video file and a metadata json for an asset. It compares if the hashes match so that we can determine if the video is valid.
+- Thumbnailer : Where a thumbnail of a video file can be produced.
+
+## How to run
+(The URL points are removed, it probably won't do anything)
+
+VideoAssetHandlerApp is executable. Instruction is provided after it runs. 
+Please run it with a command. There are two choices.
+
+1. download-asset <asset-id>
+2. produce-thumbnail
+
+You need to have a video file in '.mov' format in the same location as you run the second command. Otherwise, you will end up with an error message.
+
+I have attached two screenshots running the app.
+
+
+P.S. This project is based on https://github.com/gvolpe/pfps-shopping-cart
+This is a completely different application. No Video, No Terminal App.
