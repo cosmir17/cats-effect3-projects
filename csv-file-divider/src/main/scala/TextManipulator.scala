@@ -9,10 +9,10 @@ object TextManipulator {
 }
 
 class TextManipulator[F[_] : Sync : MonadCancelThrow : Console] private() {
-  def divide(strLines: Resource[F, Iterator[String]], maxLines: Option[Int], maxBytes: Option[Int]): Resource[F, List[Iterator[String]]] =
+  def divide(strLinesR: Resource[F, Iterator[String]], maxLines: Option[Int], maxBytes: Option[Int]): Resource[F, List[Iterator[String]]] =
     (maxLines, maxBytes) match {
-      case (None, None) => strLines.map(lines => List(lines))
-      case (ml, mb) => processWithConfigs(strLines, ml, mb)
+      case (None, None) => strLinesR.map(lines => List(lines))
+      case (ml, mb) => processWithConfigs(strLinesR, ml, mb)
     }
 
   private def processWithConfigs(strLines: Resource[F, Iterator[String]], maxLines: Option[Int], maxBytes: Option[Int]): Resource[F, List[Iterator[String]]] =
