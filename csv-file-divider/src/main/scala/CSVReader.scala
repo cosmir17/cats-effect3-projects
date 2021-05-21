@@ -7,18 +7,17 @@ import scala.io.BufferedSource
 import scala.language.postfixOps
 
 object CSVReader {
-  def make[F[_] : Sync : MonadCancelThrow : Console](): CSVReader[F] =
+  def make[F[_] : Async : MonadCancelThrow : Console](): CSVReader[F] =
     new CSVReader[F]() {}
 }
 
-class CSVReader[F[_] : Sync : MonadCancelThrow : Console] private () {
+class CSVReader[F[_] : Async : MonadCancelThrow : Console] private () {
 
-  def parseFile(inputFileName: String): F[Seq[String]] =
+  def parseFile(inputFileName: String): F[Resource[F, Iterator[String]]] =
     for {
       name <- validateFileName(inputFileName)
       csvResource = csvToResource(name)
-      strLines <- csvResource.use(i => Sync[F].delay((for (line <- i.getLines()) yield line).toSeq))
-    } yield strLines
+    } yield csvResource.evalMap(i => Sync[F].delay(i.getLines()))
 
   private def validateFileName(csvFileName: String): F[String] =
     for {
@@ -31,8 +30,8 @@ class CSVReader[F[_] : Sync : MonadCancelThrow : Console] private () {
 
   private def csvToResource(validFileName: String): Resource[F, BufferedSource] =
     Resource.make {
-      Sync[F].delay(io.Source.fromFile(validFileName) )                           // build
+      Sync[F].blocking(io.Source.fromFile(validFileName) )                           // build
     } { bufferedSource =>
-      Sync[F].delay((bufferedSource.close())).handleErrorWith(_ => Sync[F].unit)  // release
+      Sync[F].blocking(bufferedSource.close()).handleErrorWith(_ => Sync[F].unit)  // release
     }
 }

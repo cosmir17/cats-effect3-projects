@@ -73,7 +73,7 @@ object FMain {
       _ <- Sync[F].delay(println(s"Processing"))
       strLines <- reader.parseFile(config.inputFile)
       _ <- Sync[F].delay(println(s"Created a text group list"))
-      textGroups <- manipulator.divide(strLines, config.maxLines, config.maxBytes)
+      textGroups = manipulator.divide(strLines, config.maxLines, config.maxBytes)
       _ <- fileSaver.saveAsFiles(textGroups, config.outputDir)
       _ <- Sync[F].delay(println(s"Done, Program Exiting"))
     } yield ExitCode.Success

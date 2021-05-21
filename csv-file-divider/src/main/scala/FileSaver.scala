@@ -13,7 +13,7 @@ object FileSaver {
 
 class FileSaver[F[_] : Sync : Console] private() {
 
-  def saveAsFiles(textGroups: List[Seq[String]], outputDir: String): F[Unit] =
+  def saveAsFiles(textGroupsR: Resource[F, List[Iterator[String]]], outputDir: String): F[Unit] =
     for {
       validOutputDir   <- pathShouldNotStartWithSlash(outputDir)
       _                <- Sync[F].delay(println(s"Valid output path : $validOutputDir"))
@@ -24,18 +24,22 @@ class FileSaver[F[_] : Sync : Console] private() {
                           else Sync[F].delay(Files.createDirectory(folderPath)) *> Sync[F].delay(println(s"Folder created : $validOutputDir"))
       _                <- Sync[F].delay(println(s"Please enter a prefixed file name you desire"))
       prefixedFileName <- Console.make.readLine
-      textFileNames    <- Sync[F].delay(textGroups.indices.map(i => validOutputDir + "/" + prefixedFileName + "_"+ i + "_.csv"))
-      textFiles        <- Sync[F].delay(textFileNames.map(name => new File(name)))
-      resources        <- Sync[F].delay(textFiles.map(textGroupsToResource).toList)
       lineSeparator    <- Sync[F].delay(System.getProperty("line.separator"))
 
-      //ToDo partraverse
-      _                <- resources.zipWithIndex.traverse(pair => pair._1.use(ostream => Sync[F].delay(
-                            textGroups(pair._2).foreach(textLine => {
-                              ostream.write(textLine.getBytes("UTF-8"))
-                              ostream.write(lineSeparator.getBytes("UTF-8"))
-                            }))
-                              *> Sync[F].delay(println( textFileNames(pair._2) + " file created"))))
+      _                <- textGroupsR.use(tg => {
+        val fileStrings = tg.indices.map(i => validOutputDir + "/" + prefixedFileName + "_" + i + "_.csv").toList
+        val files = fileStrings.map(name => new File(name))
+        val outputFileR = files.traverse(b => textGroupsToResource(b))
+        //ToDo partraverse
+
+        outputFileR.use(_.zipWithIndex.traverse(pair => {
+          val listF = tg(pair._2).map(textLine =>
+            Sync[F].delay(pair._1.write(textLine.getBytes("UTF-8"))) *>
+            Sync[F].delay(pair._1.write(lineSeparator.getBytes("UTF-8")))
+          ).toList
+          listF.traverse(_ *> Sync[F].unit) *> Sync[F].delay(println(fileStrings(pair._2) + " file created"))
+        }))
+      })
     } yield ()
 
   def textGroupsToResource(f: File): Resource[F, FileOutputStream] =
