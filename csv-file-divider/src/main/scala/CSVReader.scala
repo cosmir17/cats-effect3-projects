@@ -30,7 +30,7 @@ class CSVReader[F[_] : Async : MonadCancelThrow : Console] private () {
 
   private def csvToResource(validFileName: String): Resource[F, BufferedSource] =
     Resource.make {
-      Sync[F].blocking(io.Source.fromFile(validFileName) )                           // build
+      Sync[F].blocking(io.Source.fromFile(validFileName) )                         // build
     } { bufferedSource =>
       Sync[F].blocking(bufferedSource.close()).handleErrorWith(_ => Sync[F].unit)  // release
     }

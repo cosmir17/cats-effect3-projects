@@ -1,3 +1,4 @@
+import cats.Parallel
 import cats.effect._
 import cats.effect.std.Console
 import cats.implicits._
@@ -63,7 +64,7 @@ object Main extends CommandIOApp(
 }
 
 object FMain {
-  def parse[F[_]: Async : Console](config: Config): F[ExitCode] = {
+  def parse[F[_]: Async : Console : Parallel](config: Config): F[ExitCode] = {
     val reader = CSVReader.make[F]()
     val manipulator = TextManipulator.make[F]()
     val fileSaver = FileSaver.make[F]()

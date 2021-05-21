@@ -1,3 +1,4 @@
+import cats.Parallel
 import cats.effect.{Resource, _}
 import cats.effect.std.Console
 import cats.syntax.all._
@@ -7,11 +8,11 @@ import java.nio.file.{Files, Paths}
 import scala.language.postfixOps
 
 object FileSaver {
-  def make[F[_] : Sync : Console](): FileSaver[F] =
+  def make[F[_] : Async : Console : Parallel](): FileSaver[F] =
     new FileSaver[F]() {}
 }
 
-class FileSaver[F[_] : Sync : Console] private() {
+class FileSaver[F[_] : Async : Console : Parallel] private() {
 
   def saveAsFiles(textGroupsR: Resource[F, List[Iterator[String]]], outputDir: String): F[Unit] =
     for {
@@ -29,15 +30,14 @@ class FileSaver[F[_] : Sync : Console] private() {
       _                <- textGroupsR.use(tg => {
         val fileStrings = tg.indices.map(i => validOutputDir + "/" + prefixedFileName + "_" + i + "_.csv").toList
         val files = fileStrings.map(name => new File(name))
-        val outputFileR = files.traverse(b => textGroupsToResource(b))
-        //ToDo partraverse
+        val outputFileR = files.parTraverse(textGroupsToResource)
 
-        outputFileR.use(_.zipWithIndex.traverse(pair => {
+        outputFileR.use(_.zipWithIndex.parTraverse(pair => {
           val listF = tg(pair._2).map(textLine =>
             Sync[F].delay(pair._1.write(textLine.getBytes("UTF-8"))) *>
             Sync[F].delay(pair._1.write(lineSeparator.getBytes("UTF-8")))
           ).toList
-          listF.traverse(_ *> Sync[F].unit) *> Sync[F].delay(println(fileStrings(pair._2) + " file created"))
+          listF.parTraverse(_ *> Sync[F].unit) *> Sync[F].delay(println(fileStrings(pair._2) + " file created"))
         }))
       })
     } yield ()
