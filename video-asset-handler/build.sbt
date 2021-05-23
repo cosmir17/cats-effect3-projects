@@ -49,7 +49,6 @@ lazy val core = (project in file("modules/core"))
     name := "video-handler-core",
     Docker / packageName := "video_handler",
     scalacOptions ++= List("-Ymacro-annotations", "-Yrangepos", "-Wconf:cat=unused:info"),
-    scalafmtOnCompile := true,
     resolvers += Resolver.sonatypeRepo("snapshots"),
     Defaults.itSettings,
     scalafixCommonSettings,
