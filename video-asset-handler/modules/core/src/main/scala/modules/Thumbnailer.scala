@@ -39,8 +39,7 @@ class Thumbnailer[F[_]: Sync: MonadCancelThrow] private (appEnv: AppEnvironment)
       _                 <- Sync[F].delay(println(s"provide a name of your thumbnail file without a format keyword, will be stored as png format"))
       thumbnailFileName <- pleaseEnterDifferentFileName()
       _                 <- Sync[F].delay(println(s"Execution Result :"))
-      executionResult   <- Sync[F].delay[String](s"ffmpeg -ss ${if(isTest) "00:00:05" else "00:00:5"} -i $videoFileName -vframes 1 $thumbnailFileName.png" !!)
-//    _                 <- if //todo
+      executionResult   <- Sync[F].delay[String](s"ffmpeg -ss 00:00:00 -i $videoFileName -vframes 1 $thumbnailFileName.png" !!)
       _                 <- Sync[F].delay(println(s"$executionResult"))
     } yield ()
 
