@@ -20,6 +20,7 @@ object Dependencies {
     val redis4cats    = "1.0.0-RC3"
     val skunk         = "0.1.1"
     val squants       = "1.8.0"
+    val slf4j         = "1.7.30"
 
     val betterMonadicFor = "0.3.1"
     val kindProjector    = "0.11.3"
@@ -27,9 +28,12 @@ object Dependencies {
     val organizeImports  = "0.5.0"
     val semanticDB       = "4.4.16"
     val declineEffect    = "2.0.0"
-    val weaver           = "0.7.2"
     val apacheCodec      = "1.15"
 
+    val weaver        = "0.7.3"
+    val specs2        = "4.11.0"
+    val wiremock      = "2.27.2"
+    val apacheCommon  = "2.8.0"
   }
 
   object Libraries {
@@ -84,7 +88,9 @@ object Dependencies {
     val apacheCodec = "commons-codec" % "commons-codec" % V.apacheCodec
 
     // Runtime
-    val logback = "ch.qos.logback" % "logback-classic" % V.logback
+    val logback       = "ch.qos.logback" % "logback-classic" % V.logback
+    val slf4j         = "org.slf4j"      % "slf4j-api"       % V.slf4j
+    val slf4jSimple   = "org.slf4j"      % "slf4j-simple"    % V.slf4j
 
     // Test
     val catsLaws         = "org.typelevel"              %% "cats-laws"         % V.cats
@@ -93,6 +99,11 @@ object Dependencies {
     val weaverCats       = "com.disneystreaming"        %% "weaver-cats"       % V.weaver
     val weaverDiscipline = "com.disneystreaming"        %% "weaver-discipline" % V.weaver
     val weaverScalaCheck = "com.disneystreaming"        %% "weaver-scalacheck" % V.weaver
+    val weaverSpecs      = "com.disneystreaming"        %% "weaver-specs2"     % V.weaver
+    val specs2           = "org.specs2"                 %% "specs2-core"       % V.specs2
+    val wiremock         = "com.github.tomakehurst"     %  "wiremock"          % V.wiremock
+
+    val apacheCommon     = "commons-io"                 %  "commons-io"        % V.apacheCommon
 
     // Scalafix rules
     val organizeImports = "com.github.liancheng" %% "organize-imports" % V.organizeImports

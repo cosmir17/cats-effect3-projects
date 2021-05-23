@@ -15,16 +15,16 @@ object metadata {
 
   @derive(decoder, show)
   case class VideoQuality(
-                           frameRate: String,
-                           resolution: String,
-                           dynamicRange: String
+      frameRate: String,
+      resolution: String,
+      dynamicRange: String
   )
 
   @derive(decoder, show)
   case class VideoIdentifier(
-                              productionId: String,
-                              title: String,
-                              duration: String
+      productionId: String,
+      title: String,
+      duration: String
   )
 
   @derive(decoder, show)

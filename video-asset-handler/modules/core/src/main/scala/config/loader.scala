@@ -16,18 +16,19 @@ object load {
       .default("prod")
       .as[AppEnvironment]
       .flatMap {
-        case Test =>
-          default[F](VideoCompanyUrl("https://localhost/playground"))
-        case Prod =>
-          default[F](VideoCompanyUrl("https://localhost/playground")) //The URL point is removed
+        case e @ Test =>
+          default[F](VideoCompanyUrl("http://localhost:8080/playground"), e)
+        case e @ Prod =>
+          default[F](VideoCompanyUrl("http://localhost:8080/playground"), e) //The URL point is removed
       }
       .load[F]
 
-  private def default[F[_]](url: VideoCompanyUrl): ConfigValue[F, AppConfig] =
+  private def default[F[_]](url: VideoCompanyUrl, appEnv: AppEnvironment): ConfigValue[F, AppConfig] =
     env("DUMMY").as[Duration].default(10.seconds).map { _ =>
       AppConfig(
         HttpClientConfig(timeout = 60.seconds, idleTimeInPool = 30.seconds),
-        VideoUrlConfig(url)
+        VideoUrlConfig(url),
+        appEnv
       )
     }
 }

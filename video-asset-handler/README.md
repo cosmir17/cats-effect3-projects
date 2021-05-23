@@ -22,6 +22,12 @@ You need to have a video file in '.mov' format in the same location as you run t
 
 I have attached two screenshots running the app.
 
+## How to run Tests
+sbt clean it:test
+"VH_APP_ENV" is set as "test" in the build file.
+If you run the tests on intellij, you have to provide an environment variable "VH_APP_ENV" as "test".
+Otherwise, tests won't run properly
+
 
 P.S. This project is based on https://github.com/gvolpe/pfps-shopping-cart
 This is a completely different application. No Video, No Terminal App.

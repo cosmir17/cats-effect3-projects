@@ -18,6 +18,8 @@ lazy val tests = (project in file("modules/tests"))
   .configs(IntegrationTest)
   .settings(
     name := "video-handler-test-suite",
+    IntegrationTest / envVars := Map("VH_APP_ENV" -> "test"),
+    IntegrationTest / fork := true,
     scalacOptions ++= List("-Ymacro-annotations", "-Yrangepos", "-Wconf:cat=unused:info"),
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Defaults.itSettings,
@@ -31,7 +33,11 @@ lazy val tests = (project in file("modules/tests"))
       Libraries.monocleLaw,
       Libraries.weaverCats,
       Libraries.weaverDiscipline,
-      Libraries.weaverScalaCheck
+      Libraries.weaverSpecs,
+      Libraries.weaverScalaCheck,
+      Libraries.wiremock,
+      Libraries.specs2,
+      Libraries.apacheCommon
     )
   )
   .dependsOn(core)
@@ -77,6 +83,8 @@ lazy val core = (project in file("modules/core"))
       Libraries.javaxCrypto,
       Libraries.log4cats,
       Libraries.logback % Runtime,
+      Libraries.slf4j,
+      Libraries.slf4jSimple,
       Libraries.monocleCore,
       Libraries.newtype,
       Libraries.redis4catsEffects,

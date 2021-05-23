@@ -1,4 +1,3 @@
-import cats.MonadThrow
 import cats.effect.std.Console
 import com.monovore.decline.{ Command, Opts }
 import cats.implicits._
@@ -69,10 +68,12 @@ object FMain {
         .make[F](cfg)
         .map(res => HttpClients.make[F](cfg.vcURIConfig, res.client))
         .use { clients =>
-          val checker = VideoEnquirer.make[F](clients)
+          val checker = VideoEnquirer.make[F](clients, cfg.appEnv)
           for {
             _             <- Sync[F].delay(println())
             _             <- Sync[F].delay(println(s"Sending a download request to the ${cfg.vcURIConfig} endpoints"))
+            _             <- if (assetId == "") Sync[F].raiseError(new IllegalArgumentException("Asset ID can't be empty"))
+                             else Sync[F].unit
             videoResource <- checker.downloadAndCheckIntegrity(assetId)
             _             <- checker.saveAsFile(videoResource)
             _             <- Sync[F].delay(println(s"Program Exiting"))
@@ -81,14 +82,16 @@ object FMain {
     }
 
   def produceThumbnail[F[_]: Async: Logger: Console](): F[ExitCode] = {
-    val thumbnailer = Thumbnailer.make[F]()
-    for {
-      _             <- Sync[F].delay(println())
-      _             <- Sync[F].delay(println(s"Starting thumbnail producer.."))
-      videoFileName <- thumbnailer.choseFile()
-      _             <- thumbnailer.create(videoFileName)
-      _             <- Sync[F].delay(println(s"A thumbnail is produced, exiting program"))
-    } yield ExitCode.Success
+    config.load[F].flatMap { cfg =>
+      val thumbnailer = Thumbnailer.make[F](cfg.appEnv)
+      for {
+        _             <- Sync[F].delay(println())
+        _             <- Sync[F].delay(println(s"Starting thumbnail producer.."))
+        videoFileName <- thumbnailer.choseFile()
+        _             <- thumbnailer.create(videoFileName)
+        _             <- Sync[F].delay(println(s"A thumbnail is produced, exiting program"))
+      } yield ExitCode.Success
+    }
   }
 
 }

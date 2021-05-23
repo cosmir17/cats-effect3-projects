@@ -1,0 +1,18 @@
+{
+  "sha1": "35ef526d6b5cf4bb8ec93082c8f653a9a84b6e52",
+  "sha256": "6f314c1d10090f43422756a0451509a8481d87a0a9e3a26ca073a98af5523247",
+  "md5": "83d2dd7e750f422fd6e03adcb0fc0991",
+  "crc32": "4367ebd3",
+  "videoQuality": {
+    "frameRate": "25FPS",
+    "resolution": "HD",
+    "dynamicRange": "HDR"
+  },
+  "identifiers": {
+    "productionId": "1/1111/44364",
+    "title": "Rabbits",
+    "seriesNumber": null,
+    "episodeNumber": null,
+    "duration": "00:10:00"
+  }
+}
