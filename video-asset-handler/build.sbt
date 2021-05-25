@@ -27,7 +27,6 @@ lazy val tests = (project in file("modules/tests"))
     libraryDependencies ++= Seq(
       CompilerPlugin.kindProjector,
       CompilerPlugin.betterMonadicFor,
-      CompilerPlugin.semanticDB,
       Libraries.catsLaws,
       Libraries.log4catsNoOp,
       Libraries.monocleLaw,
@@ -59,7 +58,6 @@ lazy val core = (project in file("modules/core"))
     libraryDependencies ++= Seq(
       CompilerPlugin.kindProjector,
       CompilerPlugin.betterMonadicFor,
-      CompilerPlugin.semanticDB,
       Libraries.cats,
       Libraries.catsEffect,
       //Libraries.catsRetry,
@@ -86,12 +84,8 @@ lazy val core = (project in file("modules/core"))
       Libraries.slf4jSimple,
       Libraries.monocleCore,
       Libraries.newtype,
-      Libraries.redis4catsEffects,
-      Libraries.redis4catsLog4cats,
       Libraries.refinedCore,
       Libraries.refinedCats,
-      Libraries.skunkCore,
-      Libraries.skunkCirce,
       Libraries.squants,
       Libraries.declineEffect,
       Libraries.apacheCodec

@@ -1,38 +1,74 @@
 package domain
 
 import derevo.cats._
-import derevo.circe.magnolia.{ decoder, encoder }
+import derevo.circe.magnolia._
 import derevo.derive
-import eu.timepit.refined._
-import eu.timepit.refined.api._
-import io.circe.Decoder
+import io.estatico.newtype.macros.newtype
 
 import scala.util.control.NoStackTrace
 
 object metadata {
-  def decoderOf[T, P](implicit v: Validate[T, P], d: Decoder[T]): Decoder[T Refined P] =
-    d.emap(refineV[P].apply[T](_))
 
-  @derive(decoder, encoder, show)
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class FrameRate(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Resolution(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class DynamicRange(value: String)
+
+  @derive(decoder, encoder, show, eqv)
   case class VideoQuality(
-      frameRate: String,
-      resolution: String,
-      dynamicRange: String
+      frameRate: FrameRate,
+      resolution: Resolution,
+      dynamicRange: DynamicRange
   )
 
-  @derive(decoder, encoder, show)
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class ProductionId(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Title(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Duration(value: String)
+
+  @derive(decoder, encoder, show, eqv)
   case class VideoIdentifier(
-      productionId: String,
-      title: String,
-      duration: String
+      productionId: ProductionId,
+      title: Title,
+      duration: Duration
   )
 
-  @derive(decoder, encoder, show)
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Sha1(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Sha256(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Md5(value: String)
+
+  @derive(decoder, encoder, show, eqv)
+  @newtype
+  case class Crc32(value: String)
+
+  @derive(decoder, encoder, show, eqv)
   case class MetaData(
-      sha1: String,
-      sha256: String,
-      md5: String,
-      crc32: String,
+      sha1: Sha1,
+      sha256: Sha256,
+      md5: Md5,
+      crc32: Crc32,
       videoQuality: VideoQuality,
       identifiers: VideoIdentifier
   )

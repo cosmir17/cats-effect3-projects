@@ -1,15 +1,15 @@
 package http.clients
 
+import cats.effect.{Concurrent, MonadCancelThrow}
 import domain.metadata._
-import org.http4s.Method.GET
-import org.http4s.{ Status, Uri }
-import org.http4s.circe.JsonDecoder
-import org.http4s.client.Client
 import config.data.VideoUrlConfig
-import cats.effect.{ Concurrent, MonadCancelThrow }
 import cats.syntax.all._
 import eu.timepit.refined.auto._
+import org.http4s.Method._
+import org.http4s._
+import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.circe._
+import org.http4s.client._
 import org.http4s.client.dsl.Http4sClientDsl
 
 trait MetaDataClient[F[_]] {

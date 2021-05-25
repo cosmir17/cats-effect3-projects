@@ -3,30 +3,27 @@ import sbt._
 object Dependencies {
 
   object V {
-    val cats          = "2.6.0"
-    val catsEffect    = "3.1.0"
+    val cats          = "2.6.1"
+    val catsEffect    = "3.1.1"
     val catsRetry     = "2.1.0"
-    val circe         = "0.14.0-M6"
+    val circe         = "0.14.0-M7"
     val ciris         = "2.0.0-RC3"
     val derevo        = "0.12.5"
     val javaxCrypto   = "1.0.1"
-    val fs2           = "3.0.2"
-    val http4s        = "1.0.0-M21"
-    val http4sJwtAuth = "1.0.0-RC2"
-    val log4cats      = "2.1.0"
-    val monocle       = "3.0.0-M5"
+    val fs2           = "3.0.4"
+    val http4s        = "1.0.0-M22"
+    val http4sJwtAuth = "1.0.0-RC3"
+    val log4cats      = "2.1.1"
+    val monocle       = "3.0.0-M6"
     val newtype       = "0.4.4"
-    val refined       = "0.9.24"
-    val redis4cats    = "1.0.0-RC3"
-    val skunk         = "0.1.1"
+    val refined       = "0.9.25"
     val squants       = "1.8.0"
     val slf4j         = "1.7.30"
 
     val betterMonadicFor = "0.3.1"
-    val kindProjector    = "0.11.3"
+    val kindProjector    = "0.13.0"
     val logback          = "1.2.3"
     val organizeImports  = "0.5.0"
-    val semanticDB       = "4.4.16"
     val declineEffect    = "2.0.0"
     val apacheCodec      = "1.15"
 
@@ -78,12 +75,6 @@ object Dependencies {
 
     val javaxCrypto = "javax.xml.crypto" % "jsr105-api" % V.javaxCrypto
 
-    val redis4catsEffects  = "dev.profunktor" %% "redis4cats-effects"  % V.redis4cats
-    val redis4catsLog4cats = "dev.profunktor" %% "redis4cats-log4cats" % V.redis4cats
-
-    val skunkCore  = "org.tpolecat" %% "skunk-core"  % V.skunk
-    val skunkCirce = "org.tpolecat" %% "skunk-circe" % V.skunk
-
     val declineEffect = "com.monovore" %% "decline-effect" % V.declineEffect
     val apacheCodec = "commons-codec" % "commons-codec" % V.apacheCodec
 
@@ -115,9 +106,6 @@ object Dependencies {
     )
     val kindProjector = compilerPlugin(
       "org.typelevel" % "kind-projector" % V.kindProjector cross CrossVersion.full
-    )
-    val semanticDB = compilerPlugin(
-      "org.scalameta" % "semanticdb-scalac" % V.semanticDB cross CrossVersion.full
     )
   }
 

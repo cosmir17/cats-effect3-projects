@@ -1,14 +1,24 @@
 package http.clients
 
-import org.http4s.circe.CirceEntityEncoder._
 import cats.effect.IO
+import cats.implicits.catsStdShowForString
 import config.data._
 import domain.video._
 import eu.timepit.refined.auto._
+import fs2.Stream
+import io.circe.generic.encoding.DerivedAsObjectEncoder.deriveEncoder
+import org.http4s.{Entity, EntityEncoder, Headers}
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+import scodec.interop.cats.ByteVectorShowInstance
+
+//import org.http4s.client.Client
+//import org.http4s.dsl.io._
+//import org.http4s.implicits._
+import org.http4s.{HttpRoutes, Response}
 import org.http4s.client.Client
 import org.http4s.dsl.io._
 import org.http4s.implicits._
-import org.http4s.{HttpRoutes, Response}
+
 import org.scalacheck.Gen
 import scodec.bits.ByteVector
 import weaver.SimpleIOSuite
@@ -17,10 +27,16 @@ import org.scalacheck.Arbitrary._
 
 object VideoClientSuite extends SimpleIOSuite with Checkers {
 
+//  implicit object ByteVectorEncoder extends EntityEncoder[IO, ByteVector] {
+//    override def toEntity(a: ByteVector): Entity[IO] = Entity(Stream[IO, Byte].apply(a.))
+//
+//    override def headers: Headers = ???
+//  }
+
   val config = VideoUrlConfig(VideoCompanyUrl("http://localhost"))
 
   def routes(mkResponse: IO[Response[IO]]) =
-    HttpRoutes.of[IO] { case POST -> Root / "" => mkResponse }
+    HttpRoutes.of[IO] { case GET -> Root / _ => mkResponse }
       .orNotFound
 
   val byteArray: Gen[Array[Byte]] =
