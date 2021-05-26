@@ -2,8 +2,6 @@ package http.clients
 
 import config.data.VideoUrlConfig
 import domain.video.{ AssetIdNotFound, _ }
-import cats.effect.MonadCancelThrow
-import cats.effect.Concurrent
 import cats.syntax.all._
 import eu.timepit.refined.auto._
 import org.http4s.Method._
@@ -18,7 +16,7 @@ trait VideoClient[F[_]] {
 }
 
 object VideoClient {
-  def make[F[_]: Async: Concurrent: MonadCancelThrow](cfg: VideoUrlConfig, client: Client[F]): VideoClient[F] =
+  def make[F[_]: Async](cfg: VideoUrlConfig, client: Client[F]): VideoClient[F] =
     new VideoClient[F] with Http4sClientDsl[F] {
       def download(assetId: String): F[ByteVector] =
         Uri.fromString(cfg.uri.value + s"/$assetId").liftTo[F].flatMap { uri =>

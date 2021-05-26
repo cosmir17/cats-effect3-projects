@@ -1,11 +1,9 @@
-import cats.effect.std.Console
 import com.monovore.decline.{ Command, Opts }
 import cats.implicits._
 import com.monovore.decline.effect.CommandIOApp
 import modules.{ HttpClients, Thumbnailer, VideoEnquirer }
 import cats.effect._
 import resources.AppResources
-import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header = s"""
@@ -62,7 +60,7 @@ object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header 
 
 object FMain {
 
-  def downloadAsset[F[_]: Async: Logger: Console](assetId: String): F[ExitCode] =
+  def downloadAsset[F[_]: Async](assetId: String): F[ExitCode] =
     config.load[F].flatMap { cfg =>
       AppResources
         .make[F](cfg)
@@ -81,7 +79,7 @@ object FMain {
         }
     }
 
-  def produceThumbnail[F[_]: Async: Logger: Console](): F[ExitCode] = {
+  def produceThumbnail[F[_]: Async](): F[ExitCode] = {
     config.load[F].flatMap { cfg =>
       val thumbnailer = Thumbnailer.make[F](cfg.appEnv)
       for {

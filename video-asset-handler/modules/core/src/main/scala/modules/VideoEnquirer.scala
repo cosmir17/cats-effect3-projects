@@ -4,7 +4,6 @@ import cats.effect._
 import cats.syntax.all._
 import domain.metadata.MetaData
 
-import org.typelevel.log4cats.Logger
 import org.apache.commons.codec.digest.DigestUtils
 
 import java.io.{ BufferedInputStream, ByteArrayInputStream }
@@ -18,14 +17,14 @@ import scodec.bits.ByteVector
 import java.nio.file.{ Files, Paths }
 
 object VideoEnquirer {
-  def make[F[_]: Logger: Sync: MonadCancelThrow: Console](
+  def make[F[_]: Sync](
       clients: HttpClients[F],
       appEnv: AppEnvironment
   ): VideoEnquirer[F] =
     new VideoEnquirer[F](clients, appEnv) {}
 }
 
-class VideoEnquirer[F[_]: Sync: Logger: MonadCancelThrow: Console] private (
+class VideoEnquirer[F[_]: Sync] private (
     clients: HttpClients[F],
     appEnv: AppEnvironment
 ) {
@@ -36,7 +35,7 @@ class VideoEnquirer[F[_]: Sync: Logger: MonadCancelThrow: Console] private (
       videoResource = entityBodyToResource(video)
       videoMd5      <- videoResource.use(i => Sync[F].delay(DigestUtils.md5Hex(i)))
       metaData      <- queryMetadata(assetId)
-      _             <- if (videoMd5 == metaData.md5) validCase() else invalidCase()
+      _             <- if (videoMd5 == metaData.md5.value) validCase() else invalidCase()
     } yield videoResource
 
   def saveAsFile(videoResource: Resource[F, BufferedInputStream]): F[Unit] =

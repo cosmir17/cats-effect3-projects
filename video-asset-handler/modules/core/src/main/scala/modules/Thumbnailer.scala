@@ -12,11 +12,11 @@ import scala.language.postfixOps
 import scala.sys.process._
 
 object Thumbnailer {
-  def make[F[_]: Sync: MonadCancelThrow](appEnv: AppEnvironment): Thumbnailer[F] =
+  def make[F[_]: Sync](appEnv: AppEnvironment): Thumbnailer[F] =
     new Thumbnailer[F](appEnv) {}
 }
 
-class Thumbnailer[F[_]: Sync: MonadCancelThrow] private (appEnv: AppEnvironment) {
+class Thumbnailer[F[_]: Sync] private (appEnv: AppEnvironment) {
   val isTest = appEnv match { case Test => true; case _ => false }
 
   def choseFile(): F[String] =

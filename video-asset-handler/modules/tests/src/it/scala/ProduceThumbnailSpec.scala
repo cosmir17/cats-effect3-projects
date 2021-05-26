@@ -31,7 +31,6 @@ object ProduceThumbnailSpec extends SimpleIOSuite with IOMatchers {
 
   test("should have a video file produced before running Thumbnailer. " +
     "FMain.downloadAsset method should run first and prepare a video file") {
-    val videoFile  =  new java.io.File("src/it/resources/server_path/__files/rabbit.mov")
     val copiedFile  =  new java.io.File("test_video_file.mov")
 
     for {
