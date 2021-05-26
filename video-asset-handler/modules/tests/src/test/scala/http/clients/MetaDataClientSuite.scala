@@ -75,19 +75,23 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
         MetaDataClient
           .make[IO](config, client)
           .query(assetId)
-          .map(expect.same(assetId, _))
+          .map(expect.same(metaData, _))
     }
   }
 
   test("Response Not Found (404)") {
     forall(gen) {
-      case (assetId, metaData) =>
-        val client = Client.fromHttpApp(routes(NotFound(metaData)))
+      case (assetId, _) =>
+        val client = Client.fromHttpApp(routes(NotFound()))
 
         MetaDataClient
           .make[IO](config, client)
           .query(assetId)
-          .map(expect.same(assetId, _))
+          .attempt
+          .map {
+            case Left(e)  => expect.same(MetaDataNetworkException("Not Found "), e)
+            case Right(_) => failure("unexpected error")
+          }
     }
   }
 
@@ -100,7 +104,7 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
         .query(assetId)
         .attempt
         .map {
-          case Left(e)  => expect.same(UnknownNetworkException("Internal Server Error"), e)
+          case Left(e)  => expect.same(MetaDataNetworkException("Internal Server Error "), e)
           case Right(_) => failure("expected metadata client error")
         }
     }

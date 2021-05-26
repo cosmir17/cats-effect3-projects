@@ -76,7 +76,5 @@ object metadata {
   abstract class MetaDataException(msg: String) extends Exception(msg) with NoStackTrace
 
   @derive(eqv, show)
-  case class AssetIdNotFound(msg: String)         extends MetaDataException(msg)
-  @derive(eqv, show)
-  case class UnknownNetworkException(msg: String) extends MetaDataException(msg)
+  case class MetaDataNetworkException(msg: String) extends MetaDataException(msg)
 }

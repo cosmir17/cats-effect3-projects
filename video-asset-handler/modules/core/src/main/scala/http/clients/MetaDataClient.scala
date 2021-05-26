@@ -1,6 +1,6 @@
 package http.clients
 
-import cats.effect.{Concurrent, MonadCancelThrow}
+import cats.effect.{Async, Concurrent, MonadCancelThrow, Sync}
 import domain.metadata._
 import config.data.VideoUrlConfig
 import cats.syntax.all._
@@ -27,11 +27,8 @@ object MetaDataClient {
                 resp.asJsonDecode[MetaData]
               case st =>
                 resp.bodyText.compile.string.flatMap { bodyString =>
-                  {
-                    if (bodyString.contains("AssetMetadataNotFound"))
-                      AssetIdNotFound(Option(st.reason).getOrElse("unknown")).raiseError[F, MetaData]
-                    else UnknownNetworkException(Option(st.reason).getOrElse("unknown")).raiseError[F, MetaData]
-                  }
+                  MetaDataNetworkException(Option(s"${st.reason} $bodyString")
+                    .getOrElse("unknown")).raiseError[F, MetaData]
                 }
             }
           }
