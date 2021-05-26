@@ -53,19 +53,23 @@
 //        VideoClient
 //          .make[IO](config, client)
 //          .download(assetId)
-//          .map(expect.same(assetId, _))
+//          .map(expect.same(videoFileGen, _))
 //    }
 //  }
 //
 //  test("Response Not Found (404)") {
 //    forall(gen) {
 //      case (assetId, videoFileGen) =>
-//        val client = Client.fromHttpApp(routes(NotFound(videoFileGen)))
+//        val client = Client.fromHttpApp(routes(NotFound()))
 //
 //        VideoClient
 //          .make[IO](config, client)
 //          .download(assetId)
-//          .map(expect.same(assetId, _))
+//          .attempt
+//          .map {
+//            case Left(e)  => expect.same(AssetIdNotFound("Not Found "), e)
+//            case Right(_) => failure("unexpected error")
+//          }
 //    }
 //  }
 //

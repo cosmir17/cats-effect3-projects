@@ -3,6 +3,7 @@ package http.clients
 import cats.effect.IO
 import config.data._
 import domain.metadata._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.client.Client
@@ -12,6 +13,8 @@ import org.http4s.{HttpRoutes, Response}
 import org.scalacheck.Gen
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
+import antimirov.Rx
+import antimirov.check.Regex
 
 object MetaDataClientSuite extends SimpleIOSuite with Checkers {
 
@@ -21,21 +24,22 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
     HttpRoutes.of[IO] { case GET -> Root / _ / "metadata" => mkResponse }
       .orNotFound
 
-  val nonEmptyStringGen: Gen[String] =
-    Gen.chooseNum(10, 55).flatMap { n => Gen.buildableOfN[String, Char](n, Gen.alphaChar) }
+  def nonEmptyStringGen(min: Int, max: Int): Gen[String] =
+    Gen.chooseNum(min, max).flatMap { n => Gen.buildableOfN[String, Char](n, Gen.alphaChar) }
 
-  def nesGen[A](f: String => A): Gen[A] = nonEmptyStringGen.map(f)
+  def nesGen[A](f: String => A, min: Int, max: Int): Gen[A] = nonEmptyStringGen(min, max).map(f)
+  val durationRegex = "[0-9]+:[0-9]{2}:[0-9]{2}" //the library doesn't support the escape character
 
-  val frameRateGen: Gen[FrameRate] = nesGen(FrameRate.apply)
-  val resolutionGen: Gen[Resolution] = nesGen(Resolution.apply)
-  val dynamicRangeGen: Gen[DynamicRange] = nesGen(DynamicRange.apply)
-  val productionIdGen: Gen[ProductionId] = nesGen(ProductionId.apply)
-  val titleGen: Gen[Title] = nesGen(Title.apply)
-  val durationGen: Gen[Duration] = nesGen(Duration.apply)
-  val sha1Gen: Gen[Sha1] = nesGen(Sha1.apply)
-  val sha256Gen: Gen[Sha256] = nesGen(Sha256.apply)
-  val md5Gen: Gen[Md5] = nesGen(Md5.apply)
-  val crc32: Gen[Crc32] = nesGen(Crc32.apply)
+  val frameRateGen: Gen[FrameRate] = nesGen(FrameRate.apply, 5, 5)
+  val resolutionGen: Gen[Resolution] = nesGen(Resolution.apply, 8, 8)
+  val dynamicRangeGen: Gen[DynamicRange] = nesGen(DynamicRange.apply, 3, 3)
+  val productionIdGen: Gen[ProductionId] = nesGen(ProductionId.apply, 10, 10)
+  val titleGen: Gen[Title] = nesGen(Title.apply, 10, 40)
+  val durationGen: Gen[DurationPred] = Regex.gen(Rx.parse(durationRegex)).map[DurationPred](Refined.unsafeApply)
+  val sha1Gen: Gen[Sha1Pred] = nonEmptyStringGen(40,40).map[Sha1Pred](Refined.unsafeApply)
+  val sha256Gen: Gen[Sha256Pred] = nonEmptyStringGen(64, 64).map[Sha256Pred](Refined.unsafeApply)
+  val md5Gen: Gen[Md5Pred] = nonEmptyStringGen(32, 32).map[Md5Pred](Refined.unsafeApply)
+  val crc32: Gen[Crc32Pred] = nonEmptyStringGen(8, 8).map[Crc32Pred](Refined.unsafeApply)
 
   val videoQualityGen: Gen[VideoQuality] =
     for {
@@ -49,7 +53,7 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
       productionId <- productionIdGen
       title <- titleGen
       duration <- durationGen
-    } yield VideoIdentifier(productionId, title, duration)
+    } yield VideoIdentifier(productionId, title, Duration(duration))
 
 
   val metaDataGen: Gen[MetaData] =
@@ -60,10 +64,10 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
       crc32 <- crc32
       vq <- videoQualityGen
       vi <- videoIdGen
-    } yield MetaData(sha1, sha256, md5, crc32, vq, vi)
+    } yield MetaData(Sha1(sha1), Sha256(sha256), Md5(md5), Crc32(crc32), vq, vi)
 
   val gen = for {
-    assetIdGen <- nonEmptyStringGen
+    assetIdGen <- nonEmptyStringGen(5, 20)
     metaData <- metaDataGen
   } yield assetIdGen -> metaData
 
@@ -96,7 +100,7 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
   }
 
   test("Internal Server Error response (500)") {
-    forall(nonEmptyStringGen) { assetId =>
+    forall(nonEmptyStringGen(5, 10)) { assetId =>
       val client = Client.fromHttpApp(routes(InternalServerError()))
 
       MetaDataClient

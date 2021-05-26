@@ -6,8 +6,8 @@ object Dependencies {
     val cats          = "2.6.1"
     val catsEffect    = "3.1.1"
     val catsRetry     = "2.1.0"
-    val circe         = "0.14.0"
-    val ciris         = "2.0.0-RC3"
+    val circe         = "0.14.1"
+    val ciris         = "2.0.0"
     val derevo        = "0.12.5"
     val javaxCrypto   = "1.0.1"
     val fs2           = "3.0.4"
@@ -16,7 +16,7 @@ object Dependencies {
     val log4cats      = "2.1.1"
     val monocle       = "3.0.0-M6"
     val newtype       = "0.4.4"
-    val refined       = "0.9.25"
+    val refined       = "0.9.26"
     val squants       = "1.8.0"
     val slf4j         = "1.7.30"
 
@@ -31,6 +31,7 @@ object Dependencies {
     val specs2        = "4.11.0"
     val wiremock      = "2.27.2"
     val apacheCommon  = "2.8.0"
+    val spireMath     = "0.2.6"
   }
 
   object Libraries {
@@ -93,7 +94,9 @@ object Dependencies {
     val weaverSpecs      = "com.disneystreaming"        %% "weaver-specs2"     % V.weaver
     val specs2           = "org.specs2"                 %% "specs2-core"       % V.specs2
     val wiremock         = "com.github.tomakehurst"     %  "wiremock"          % V.wiremock
-
+    val spireMathCore    = "org.spire-math"             %% "antimirov-core"    % V.spireMath
+    val spireMathCheck   = "org.spire-math"             %% "antimirov-check"   % V.spireMath
+    val spireMathProps   = "org.spire-math"             %% "antimirov-props"   % V.spireMath
     val apacheCommon     = "commons-io"                 %  "commons-io"        % V.apacheCommon
 
     // Scalafix rules

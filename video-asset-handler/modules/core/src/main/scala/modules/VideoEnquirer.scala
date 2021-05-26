@@ -35,7 +35,7 @@ class VideoEnquirer[F[_]: Sync] private (
       videoResource = entityBodyToResource(video)
       videoMd5      <- videoResource.use(i => Sync[F].delay(DigestUtils.md5Hex(i)))
       metaData      <- queryMetadata(assetId)
-      _             <- if (videoMd5 == metaData.md5.value) validCase() else invalidCase()
+      _             <- if (videoMd5 == metaData.md5.value.value) validCase() else invalidCase()
     } yield videoResource
 
   def saveAsFile(videoResource: Resource[F, BufferedInputStream]): F[Unit] =

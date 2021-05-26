@@ -36,7 +36,10 @@ lazy val tests = (project in file("modules/tests"))
       Libraries.weaverScalaCheck,
       Libraries.wiremock,
       Libraries.specs2,
-      Libraries.apacheCommon
+      Libraries.apacheCommon,
+      Libraries.spireMathCore,
+      Libraries.spireMathCheck,
+      Libraries.spireMathProps
     )
   )
   .dependsOn(core)
