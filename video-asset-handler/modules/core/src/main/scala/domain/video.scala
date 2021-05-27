@@ -10,7 +10,7 @@ object video {
   @derive(eqv, show)
   case class AssetIdNotFound(msg: String)         extends VideoCheckerException(msg)
   @derive(eqv, show)
-  case class UnknownNetworkException(msg: String) extends VideoCheckerException(msg)
+  case class OtherVideoNetworkException(msg: String) extends VideoCheckerException(msg)
   @derive(eqv, show)
   case class VideoCorrupted(msg: String)          extends VideoCheckerException(msg)
 }

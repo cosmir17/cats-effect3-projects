@@ -39,7 +39,8 @@ lazy val tests = (project in file("modules/tests"))
       Libraries.apacheCommon,
       Libraries.spireMathCore,
       Libraries.spireMathCheck,
-      Libraries.spireMathProps
+      Libraries.spireMathProps,
+      Libraries.scodecCats
     )
   )
   .dependsOn(core)

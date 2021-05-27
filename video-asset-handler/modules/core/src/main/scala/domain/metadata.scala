@@ -112,7 +112,10 @@ object metadata {
       identifiers: VideoIdentifier
   )
 
-  abstract class MetaDataException(msg: String) extends Exception(msg) with NoStackTrace
+  abstract class MetaDataException(msg: String)    extends Exception(msg) with NoStackTrace
+
+  @derive(eqv, show)
+  case class AssetIdNotFound(msg: String)          extends MetaDataException(msg)
 
   @derive(eqv, show)
   case class MetaDataNetworkException(msg: String) extends MetaDataException(msg)

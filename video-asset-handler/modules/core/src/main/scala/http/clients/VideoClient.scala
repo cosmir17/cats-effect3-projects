@@ -24,13 +24,11 @@ object VideoClient {
             resp.status match {
               case Status.Ok =>
                 resp.body.compile.to(ByteVector)
+              case st @ Status.NotFound =>
+                  AssetIdNotFound(Option(st.reason).getOrElse("unknown")).raiseError[F, ByteVector]
               case st =>
-                resp.bodyText.compile.string.flatMap { bodyString =>
-                  {
-                    if (bodyString.contains("VideoAssetNotFound"))
-                      AssetIdNotFound(Option(st.reason).getOrElse("unknown")).raiseError[F, ByteVector]
-                    else UnknownNetworkException(Option(st.reason).getOrElse("unknown")).raiseError[F, ByteVector]
-                  }
+                resp.bodyText.compile.string.flatMap { _ =>
+                    OtherVideoNetworkException(Option(st.reason).getOrElse("unknown")).raiseError[F, ByteVector]
                 }
             }
           }

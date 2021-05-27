@@ -32,6 +32,7 @@ object Dependencies {
     val wiremock      = "2.27.2"
     val apacheCommon  = "2.8.0"
     val spireMath     = "0.2.6"
+    val scodecCats    = "1.1.0"
   }
 
   object Libraries {
@@ -98,6 +99,7 @@ object Dependencies {
     val spireMathCheck   = "org.spire-math"             %% "antimirov-check"   % V.spireMath
     val spireMathProps   = "org.spire-math"             %% "antimirov-props"   % V.spireMath
     val apacheCommon     = "commons-io"                 %  "commons-io"        % V.apacheCommon
+    val scodecCats       = "org.scodec"                 %% "scodec-cats"       % V.scodecCats
 
     // Scalafix rules
     val organizeImports = "com.github.liancheng" %% "organize-imports" % V.organizeImports

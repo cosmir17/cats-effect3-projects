@@ -43,32 +43,32 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
 
   val videoQualityGen: Gen[VideoQuality] =
     for {
-      frameRate <- frameRateGen
-      resolution <- resolutionGen
-      dynamicRange <- dynamicRangeGen
+      frameRate     <- frameRateGen
+      resolution    <- resolutionGen
+      dynamicRange  <- dynamicRangeGen
     } yield VideoQuality(frameRate, resolution, dynamicRange)
 
   val videoIdGen: Gen[VideoIdentifier] =
     for {
-      productionId <- productionIdGen
-      title <- titleGen
-      duration <- durationGen
+      productionId  <- productionIdGen
+      title         <- titleGen
+      duration      <- durationGen
     } yield VideoIdentifier(productionId, title, Duration(duration))
 
 
   val metaDataGen: Gen[MetaData] =
     for {
-      sha1 <- sha1Gen
-      sha256 <- sha256Gen
-      md5 <- md5Gen
-      crc32 <- crc32
-      vq <- videoQualityGen
-      vi <- videoIdGen
+      sha1          <- sha1Gen
+      sha256        <- sha256Gen
+      md5           <- md5Gen
+      crc32         <- crc32
+      vq            <- videoQualityGen
+      vi            <- videoIdGen
     } yield MetaData(Sha1(sha1), Sha256(sha256), Md5(md5), Crc32(crc32), vq, vi)
 
   val gen = for {
-    assetIdGen <- nonEmptyStringGen(5, 20)
-    metaData <- metaDataGen
+    assetIdGen      <- nonEmptyStringGen(5, 20)
+    metaData        <- metaDataGen
   } yield assetIdGen -> metaData
 
   test("Response Ok (200)") {
@@ -93,7 +93,7 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
           .query(assetId)
           .attempt
           .map {
-            case Left(e)  => expect.same(MetaDataNetworkException("Not Found "), e)
+            case Left(e)  => expect.same(AssetIdNotFound("Not Found"), e)
             case Right(_) => failure("unexpected error")
           }
     }
@@ -108,7 +108,7 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
         .query(assetId)
         .attempt
         .map {
-          case Left(e)  => expect.same(MetaDataNetworkException("Internal Server Error "), e)
+          case Left(e)  => expect.same(MetaDataNetworkException("Internal Server Error"), e)
           case Right(_) => failure("expected metadata client error")
         }
     }

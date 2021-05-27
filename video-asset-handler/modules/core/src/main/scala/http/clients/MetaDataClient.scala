@@ -24,9 +24,11 @@ object MetaDataClient {
             resp.status match {
               case Status.Ok | Status.Conflict =>
                 resp.asJsonDecode[MetaData]
+              case st @ Status.NotFound =>
+                AssetIdNotFound(Option(st.reason).getOrElse("unknown")).raiseError[F, MetaData]
               case st =>
                 resp.bodyText.compile.string.flatMap { bodyString =>
-                  MetaDataNetworkException(Option(s"${st.reason} $bodyString")
+                  MetaDataNetworkException(Option(s"${st.reason}${if (bodyString.isEmpty) "" else s" $bodyString"}")
                     .getOrElse("unknown")).raiseError[F, MetaData]
                 }
             }
