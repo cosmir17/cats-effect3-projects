@@ -99,6 +99,26 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
     }
   }
 
+  test("Empty asset ID should yield Asset ID not found exception") {
+    val messageFromEndpoint = """{
+                                |    "error": "VideoAssetNotFound",
+                                |    "description": "The video of the provided asset `metadata` could not be found"
+                                |}""".stripMargin
+
+    forall(nonEmptyStringGen(0, 0)) { assetId =>
+      val client = Client.fromHttpApp(routes(NotFound(messageFromEndpoint)))
+
+      MetaDataClient
+        .make[IO](config, client)
+        .query(assetId)
+        .attempt
+        .map {
+          case Left(e)  => expect.same(AssetIdNotFound("Not Found"), e)
+          case Right(_) => failure("expected metadata client error")
+        }
+    }
+  }
+
   test("Internal Server Error response (500)") {
     forall(nonEmptyStringGen(5, 10)) { assetId =>
       val client = Client.fromHttpApp(routes(InternalServerError()))
@@ -113,4 +133,5 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
         }
     }
   }
+
 }

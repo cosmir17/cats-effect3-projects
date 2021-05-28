@@ -36,12 +36,17 @@ object VideoClientSuite extends SimpleIOSuite with Checkers {
   val byteVector: Gen[ByteVector] =
     byteArray.map(ByteVector.apply)
 
-  val nonEmptyStringGen: Gen[String] =
+  def stringGen(min: Int, max: Int) : Gen[String] =
     Gen
-      .chooseNum(10, 55)
+      .chooseNum(min, max)
       .flatMap { n =>
         Gen.buildableOfN[String, Char](n, Gen.alphaChar)
       }
+  val nonEmptyStringGen: Gen[String] =
+    stringGen(10, 55)
+
+  val emptyStringGen: Gen[String] =
+    stringGen(0, 0)
 
   val gen = for {
     assetIdGen     <- nonEmptyStringGen
@@ -71,8 +76,26 @@ object VideoClientSuite extends SimpleIOSuite with Checkers {
           .attempt
           .map {
             case Left(e)  => expect.same(AssetIdNotFound("Not Found"), e)
-            case Right(_) => failure("unexpected error")
+            case _ => failure("unexpected error")
           }
+    }
+  }
+
+  test("Empty asset ID should yield Asset ID not found exception") {
+    val forbiddenMsg = "{\n    \"message\": \"Missing Authentication Token\"\n}"
+    def emptyRoute(mkResponse: IO[Response[IO]]) =  HttpRoutes.of[IO] { case GET -> Root / "" => mkResponse }.orNotFound
+
+    forall(emptyStringGen) { assetId =>
+      val client = Client.fromHttpApp(emptyRoute(Forbidden(forbiddenMsg))) //according to the endpoint I am testing against
+
+      VideoClient
+        .make[IO](config, client)
+        .download(assetId)
+        .attempt
+        .map {
+          case Left(e)  => expect.same(AssetIdNotFound("Not Found"), e)
+          case _ => failure("unexpected video client error")
+        }
     }
   }
 
@@ -86,8 +109,9 @@ object VideoClientSuite extends SimpleIOSuite with Checkers {
         .attempt
         .map {
           case Left(e)  => expect.same(OtherVideoNetworkException("Internal Server Error"), e)
-          case Right(_) => failure("expected video client error")
+          case _ => failure("unexpected video client error")
         }
     }
   }
+
 }
