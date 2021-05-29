@@ -18,10 +18,10 @@ object HashConverterTest extends SimpleIOSuite {
 
     for {
       Hashes(sha1T, sha256T, md5T, crc32T) <- resource.use(HashConverter.convert[IO])
-      _        = expect.same(sha1T, sha1)
-      _        = expect.same(sha256T, sha256)
-      _        = expect.same(md5T, md5)
-      _        = expect.same(crc32T, crc32)
+      _        = expect.same(sha1T, sha1).failFast
+      _        = expect.same(sha256T, sha256).failFast
+      _        = expect.same(md5T, md5).failFast
+      _        = expect.same(crc32T, crc32).failFast
     } yield success
   }
 
@@ -35,10 +35,10 @@ object HashConverterTest extends SimpleIOSuite {
 
     for {
       Hashes(sha1T, sha256T, md5T, crc32T) <- resource.use(HashConverter.convert[IO])
-      _        = expect.same(sha1T, sha1)
-      _        = expect.same(sha256T, sha256)
-      _        = expect.same(md5T, md5)
-      _        = expect.same(crc32T, crc32)
+      _        = expect.same(sha1T, sha1).failFast
+      _        = expect.same(sha256T, sha256).failFast
+      _        = expect.same(md5T, md5).failFast
+      _        = expect.same(crc32T, crc32).failFast
     } yield success
   }
 

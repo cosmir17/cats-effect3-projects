@@ -11,19 +11,19 @@ Here's an overview of the three different components that make this application.
 
 ## How to run
 (The URL points are removed, it probably won't do anything)
+URL can be added in Prod section in 'config.loader' class.
 
-VideoAssetHandlerApp is executable. Instruction is provided after it runs. 
+VideoAssetHandlerApp is executable. Instruction is shown after the app runs. 
 Please run it with a command. There are two choices.
 
 1. download-asset <asset-id>
 2. produce-thumbnail
 
 You need to have a video file in '.mov' format in the same location as you run the second command. Otherwise, you will end up with an error message.
-
-I have attached two screenshots running the app.
+I have attached two screenshots running the app. This is a graphical aid.
 
 ## How to run Tests
-sbt clean it:test
+sbt clean it:test test
 "VH_APP_ENV" is set as "test" in the build file.
 If you run the tests on intellij, you have to provide an environment variable "VH_APP_ENV" as "test".
 Otherwise, tests won't run properly
