@@ -17,24 +17,23 @@ import scodec.bits.ByteVector
 import java.nio.file.{ Files, Paths }
 
 object VideoEnquirer {
-  def make[F[_]: Sync](
+  def make[F[_]: Async](
       clients: HttpClients[F],
       appEnv: AppEnvironment
   ): VideoEnquirer[F] =
     new VideoEnquirer[F](clients, appEnv) {}
 }
 
-class VideoEnquirer[F[_]: Sync] private (
+class VideoEnquirer[F[_]: Async] private (
     clients: HttpClients[F],
     appEnv: AppEnvironment
 ) {
 
   def downloadAndCheckIntegrity(assetId: String): F[Resource[F, BufferedInputStream]] =
     for {
-      video         <- download(assetId)
+      (video, metaData) <- Async[F].both(download(assetId), queryMetadata(assetId))
       videoResource = entityBodyToResource(video)
       videoMd5      <- videoResource.use(i => Sync[F].delay(DigestUtils.md5Hex(i)))
-      metaData      <- queryMetadata(assetId)
       _             <- if (videoMd5 == metaData.md5.value.value) validCase() else invalidCase()
     } yield videoResource
 
