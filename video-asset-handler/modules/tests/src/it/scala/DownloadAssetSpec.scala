@@ -47,11 +47,51 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       _       <- stubOne
       _       <- stubTwo
       result  <- FMain.downloadAsset("valid")
-      _       =  expect(result == ExitCode.Success)
+      _       =  expect(result == ExitCode.Success).failFast
       file    <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       created <- IO(expect(file.nonEmpty))
       _       <- IO(new File("test_video_file.mov").delete())
       _       <- IO(wireMockServer.stop())
+    } yield created
+  }
+
+  test("should make http requests in parallel") {
+    val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
+    val path = "/playground/"
+    val assetId = "valid"
+
+    val stubOne = IO(stubFor(get(urlEqualTo(path + assetId))
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withBodyFile("rabbit.mov")
+          .withFixedDelay(300)
+      )))
+
+    val stubTwo = IO(stubFor(get(urlEqualTo(path + assetId + "/metadata"))
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader("Content-Type", "application/json;charset=UTF-8")
+          .withBodyFile("json/rabbit-metadata.json")
+          .withFixedDelay(300)
+      )))
+
+    for {
+      _           <- IO(new File("test_video_file.mov").delete())
+      _           <- wm
+      _           <- stubOne
+      _           <- stubTwo
+      initial     <- IO.realTime
+      result      <- FMain.downloadAsset("valid")
+      end         <- IO.realTime
+      processTime =  end.minus(initial).toMillis
+      _           <- expect(processTime < 450L).failFast
+      _           =  expect(result == ExitCode.Success).failFast
+      file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
+      created     <- IO(expect(file.nonEmpty))
+      _           <- IO(new File("test_video_file.mov").delete())
+      _           <- IO(wireMockServer.stop())
     } yield created
   }
 
@@ -82,7 +122,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _            =  expect(result == ExitCode.Error)
+      _            =  expect(result == ExitCode.Error).failFast
       file         <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       notCreated   <- IO(expect(file.isEmpty))
       _            <- IO(new File("test_video_file.mov").delete())
@@ -114,7 +154,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _           =  expect(result == ExitCode.Error)
+      _           =  expect(result == ExitCode.Error).failFast
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       notCreated  <- IO(expect(file.isEmpty))
       _           <- IO(new File("test_video_file.mov").delete())
@@ -149,11 +189,13 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case e: IllegalArgumentException if e.getMessage == "Asset ID can't be empty" => IO(success)
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _           =  expect(result == ExitCode.Error)
+      _           =  expect(result == ExitCode.Error).failFast
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       notCreated  <- IO(expect(file.isEmpty))
       _           <- IO(new File("test_video_file.mov").delete())
       _           <- IO(wireMockServer.stop())
     } yield notCreated
   }
+
+
 }
