@@ -4,17 +4,16 @@ import cats.effect._
 import cats.syntax.all._
 import domain.metadata.MetaData
 
-import org.apache.commons.codec.digest.DigestUtils
-
-import java.io.{ BufferedInputStream, ByteArrayInputStream }
+import java.io.{BufferedInputStream, ByteArrayInputStream}
 import cats.effect.Resource
 import cats.effect.std.Console
 import config.environments.AppEnvironment
 import config.environments.AppEnvironment.Test
 import domain.video.VideoCorrupted
+import modules.HashConverter.Hashes
 import scodec.bits.ByteVector
 
-import java.nio.file.{ Files, Paths }
+import java.nio.file.{Files, Paths}
 
 object VideoEnquirer {
   def make[F[_]: Async](
@@ -31,10 +30,13 @@ class VideoEnquirer[F[_]: Async] private (
 
   def downloadAndCheckIntegrity(assetId: String): F[Resource[F, BufferedInputStream]] =
     for {
-      (video, metaData) <- Async[F].both(download(assetId), queryMetadata(assetId))
-      videoResource = entityBodyToResource(video)
-      videoMd5      <- videoResource.use(i => Sync[F].delay(DigestUtils.md5Hex(i)))
-      _             <- if (videoMd5 == metaData.md5.value.value) validCase() else invalidCase()
+      (video, metaData)                 <- Async[F].both(download(assetId), queryMetadata(assetId))
+      videoResource                     =  entityBodyToResource(video)
+      Hashes(sha1, sha256, md5, crc32)  <- videoResource.use(HashConverter.convert[F])
+      _                                 <- if (sha1 == metaData.sha1.value.value) validCase("sha1") else invalidCase("sha1")
+      _                                 <- if (sha256 == metaData.sha256.value.value) validCase("sha256") else invalidCase("sha256")
+      _                                 <- if (md5 == metaData.md5.value.value) validCase("md5") else invalidCase("md5")
+      _                                 <- if (crc32 == metaData.crc32.value.value) validCase("crc32") else invalidCase(s"crc32")
     } yield videoResource
 
   def saveAsFile(videoResource: Resource[F, BufferedInputStream]): F[Unit] =
@@ -56,9 +58,10 @@ class VideoEnquirer[F[_]: Async] private (
 
   private def queryMetadata(assetId: String): F[MetaData] = clients.metaDataQuerier.query(assetId)
 
-  private def validCase(): F[Unit] =
-    Sync[F].delay(println(s"the video is valid")) *> Sync[F].unit
+  private def validCase(hash: String): F[Unit] =
+    Sync[F].delay(println(s"the video is valid according to $hash hash validation")) *> Sync[F].unit
 
-  private def invalidCase(): F[Unit] =
-    Sync[F].raiseError(VideoCorrupted("the video is invalid, the program exits")) *> Sync[F].unit
+  private def invalidCase(hash: String): F[Unit] =
+    Sync[F].raiseError(VideoCorrupted(s"the video's is invalid as it's hash doesn't match to " +
+      s"the $hash hash in the metadata response, the program exits")) *> Sync[F].unit
 }

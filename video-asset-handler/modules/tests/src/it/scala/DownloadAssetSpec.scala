@@ -65,7 +65,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         aResponse()
           .withStatus(200)
           .withBodyFile("rabbit.mov")
-          .withFixedDelay(300)
+          .withFixedDelay(500)
       )))
 
     val stubTwo = IO(stubFor(get(urlEqualTo(path + assetId + "/metadata"))
@@ -74,7 +74,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
           .withStatus(200)
           .withHeader("Content-Type", "application/json;charset=UTF-8")
           .withBodyFile("json/rabbit-metadata.json")
-          .withFixedDelay(300)
+          .withFixedDelay(500)
       )))
 
     for {
@@ -86,7 +86,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       result      <- FMain.downloadAsset("valid")
       end         <- IO.realTime
       processTime =  end.minus(initial).toMillis
-      _           <- expect(processTime < 450L).failFast
+      _           <- expect(processTime < 900L).failFast
       _           =  expect(result == ExitCode.Success).failFast
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       created     <- IO(expect(file.nonEmpty))
