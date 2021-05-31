@@ -10,8 +10,8 @@ Here's an overview of the three different components that make this application.
 - Thumbnailer : Where a thumbnail of a video file can be produced.
 
 ## How to run
-(The URL points are removed, it probably won't do anything)
-URL can be added in Prod section in 'config.loader' class.
+The URL points are removed. The intended URLs are to be added in Prod section in 'modules/core/src/main/scala/config/loader.scala' file.
+Once supplied, this application runs successfully. The integration and unit Tests run successfully without this config.
 
 VideoAssetHandlerApp is executable. Instruction is shown after the app runs. 
 Please run it with a command. There are two choices.
