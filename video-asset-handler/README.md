@@ -6,7 +6,7 @@ This project uses Cats Effect 3, Cats, Http4s and Decline
 Here's an overview of the three different components that make this application.
 
 - VideoAssetHandlerApp : Main terminal app.
-- VideoEnquirer : It downloads a video file and a metadata json for an asset. It compares if the hashes match so that we can determine if the video is valid.
+- VideoEnquirer : It downloads a video file and a metadata JSON for an asset. It compares if the hashes match so that we can determine if the video is valid.
 - Thumbnailer : Where a thumbnail of a video file can be produced.
 
 ## How to run
@@ -24,6 +24,7 @@ I have attached two screenshots running the app. This is a graphical aid.
 
 ## How to run Tests
 sbt clean it:test test
+
 "VH_APP_ENV" is set as "test" in the build file.
 If you run the tests on intellij, you have to provide an environment variable "VH_APP_ENV" as "test".
 Otherwise, tests won't run properly
