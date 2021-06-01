@@ -63,5 +63,5 @@ class VideoEnquirer[F[_]: Async] private (
 
   private def invalidCase(hash: String): F[Unit] =
     Sync[F].raiseError(VideoCorrupted(s"the video's is invalid as it's hash doesn't match to " +
-      s"the $hash hash in the metadata response, the program exits")) *> Sync[F].unit
+      s"the $hash hash in the metadata response")) *> Sync[F].unit
 }

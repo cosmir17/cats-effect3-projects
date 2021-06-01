@@ -2,7 +2,8 @@ package domain
 
 import derevo.cats._
 import derevo.derive
-import derevo.circe.magnolia.{ decoder, encoder }
+import derevo.circe.magnolia.{decoder, encoder}
+import domain.AppExceptionHandler.AppException
 import eu.timepit.refined._
 import eu.timepit.refined.api._
 import eu.timepit.refined.cats._
@@ -11,8 +12,6 @@ import eu.timepit.refined.string.MatchesRegex
 import io.estatico.newtype.macros.newtype
 import io.circe.Decoder
 import io.circe.refined._
-
-import scala.util.control.NoStackTrace
 
 object metadata {
   implicit def validateSizeN[N <: Int, R](implicit w: ValueOf[N]): Validate.Plain[R, Size[N]] =
@@ -112,11 +111,15 @@ object metadata {
       identifiers: VideoIdentifier
   )
 
-  abstract class MetaDataException(msg: String)    extends Exception(msg) with NoStackTrace
+  abstract class MetaDataException(msg: String)    extends AppException(msg)
 
   @derive(eqv, show)
-  case class AssetIdNotFound(msg: String)          extends MetaDataException(msg)
+  case class AssetIdNotFound(msg: String)          extends MetaDataException(msg)  {
+    override def getConsoleMsg = "Supplied Asset ID is not usable, try a different ID"
+  }
 
   @derive(eqv, show)
-  case class MetaDataNetworkException(msg: String) extends MetaDataException(msg)
+  case class MetaDataNetworkException(msg: String) extends MetaDataException(msg) {
+    override def getConsoleMsg = msg
+  }
 }

@@ -81,7 +81,6 @@ object Dependencies {
     val apacheCodec = "commons-codec" % "commons-codec" % V.apacheCodec
 
     // Runtime
-    val logback       = "ch.qos.logback" % "logback-classic" % V.logback
     val slf4j         = "org.slf4j"      % "slf4j-api"       % V.slf4j
     val slf4jSimple   = "org.slf4j"      % "slf4j-simple"    % V.slf4j
 
