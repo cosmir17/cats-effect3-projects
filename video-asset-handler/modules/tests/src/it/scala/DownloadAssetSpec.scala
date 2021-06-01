@@ -55,6 +55,38 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
     } yield created
   }
 
+  test("downloadAsset should not pass when a hash validation fails for crc32 and md5") {
+    val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
+    val path = "/playground/"
+    val assetId = "valid"
+
+    val stubOne = IO(stubFor(get(urlEqualTo(path + assetId))
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withBodyFile("rabbit.mov"))))
+
+    val stubTwo = IO(stubFor(get(urlEqualTo(path + assetId + "/metadata"))
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader("Content-Type", "application/json;charset=UTF-8")
+          .withBodyFile("json/rabbit-metadata-wrong-crc32-md5.json"))))
+
+    for {
+      _       <- IO(new File("test_video_file.mov").delete())
+      _       <- wm
+      _       <- stubOne
+      _       <- stubTwo
+      result  <- FMain.downloadAsset("valid")
+      _       =  expect(result == ExitCode.Error).failFast
+      file    <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
+      created <- IO(expect(file.isEmpty))
+      _       <- IO(new File("test_video_file.mov").delete())
+      _       <- IO(wireMockServer.stop())
+    } yield created
+  }
+
   test("should make http requests in parallel") {
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
@@ -65,7 +97,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         aResponse()
           .withStatus(200)
           .withBodyFile("rabbit.mov")
-          .withFixedDelay(500)
+          .withFixedDelay(800)
       )))
 
     val stubTwo = IO(stubFor(get(urlEqualTo(path + assetId + "/metadata"))
@@ -74,7 +106,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
           .withStatus(200)
           .withHeader("Content-Type", "application/json;charset=UTF-8")
           .withBodyFile("json/rabbit-metadata.json")
-          .withFixedDelay(500)
+          .withFixedDelay(800)
       )))
 
     for {
@@ -86,7 +118,7 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       result      <- FMain.downloadAsset("valid")
       end         <- IO.realTime
       processTime =  end.minus(initial).toMillis
-      _           <- expect(processTime < 900L).failFast
+      _           <- expect(processTime < 1500L).failFast
       _           =  expect(result == ExitCode.Success).failFast
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       created     <- IO(expect(file.nonEmpty))
