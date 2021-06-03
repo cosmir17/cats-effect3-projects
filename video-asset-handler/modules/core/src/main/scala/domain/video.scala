@@ -2,10 +2,10 @@ package domain
 
 import derevo.cats._
 import derevo.derive
-import domain.AppExceptionHandler.AppException
+import domain.downloader.DownloaderException
 
 object video {
-  abstract class VideoCheckerException(msg: String)  extends AppException(msg)
+  abstract class VideoCheckerException(msg: String)  extends DownloaderException(msg)
 
   @derive(eqv, show)
   case class AssetIdNotFound(msg: String)            extends VideoCheckerException(msg) {

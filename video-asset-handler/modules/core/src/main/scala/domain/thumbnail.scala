@@ -1,13 +1,14 @@
 package domain
 
-import derevo.cats.{ eqv, show }
+import derevo.cats.{eqv, show}
 import derevo.derive
-
-import scala.util.control.NoStackTrace
+import domain.AppExceptionHandler.AppException
 
 object thumbnail {
-  abstract class ThumbnailException(msg: String) extends Exception(msg) with NoStackTrace
+  abstract class ThumbnailException(msg: String) extends AppException(msg)
 
   @derive(eqv, show)
-  case class VideoFilesDoNotExist(msg: String) extends ThumbnailException(msg)
+  case class VideoFilesDoNotExist(msg: String) extends ThumbnailException(msg) {
+    override def getConsoleMsg: String = "No video file is present, please produce a video first"
+  }
 }

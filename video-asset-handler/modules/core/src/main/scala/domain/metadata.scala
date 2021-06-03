@@ -3,7 +3,7 @@ package domain
 import derevo.cats._
 import derevo.derive
 import derevo.circe.magnolia.{decoder, encoder}
-import domain.AppExceptionHandler.AppException
+import domain.downloader.DownloaderException
 import eu.timepit.refined._
 import eu.timepit.refined.api._
 import eu.timepit.refined.cats._
@@ -111,7 +111,7 @@ object metadata {
       identifiers: VideoIdentifier
   )
 
-  abstract class MetaDataException(msg: String)    extends AppException(msg)
+  abstract class MetaDataException(msg: String)    extends DownloaderException(msg)
 
   @derive(eqv, show)
   case class AssetIdNotFound(msg: String)          extends MetaDataException(msg)  {

@@ -22,7 +22,7 @@ class Thumbnailer[F[_]: Sync] private (appEnv: AppEnvironment) {
   def choseFile(): F[String] =
     for {
       files <- Sync[F].delay(new File(".").listFiles.filter(_.isFile).filter(_.getName.endsWith(".mov")).toList)
-      _             <- if (files.isEmpty) Sync[F].raiseError(VideoFilesDoNotExist("no video file is present, please produce a video first, exiting program"))
+      _             <- if (files.isEmpty) Sync[F].raiseError(VideoFilesDoNotExist("no video file is present"))
                        else Sync[F].delay(println(s"Listing video files"))
       _             <- Sync[F].delay(println(s"_______________________________________________________"))
       _             <- Sync[F].delay(files.foreach(file => println(s"${file.getName}")))

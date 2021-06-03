@@ -4,6 +4,8 @@ import com.monovore.decline.effect.CommandIOApp
 import modules.{HttpClients, Thumbnailer, VideoEnquirer}
 import cats.effect._
 import domain.AppExceptionHandler._
+import domain.downloader.DownloaderException
+import domain.thumbnail.ThumbnailException
 import resources.AppResources
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
@@ -78,7 +80,7 @@ object FMain {
             _             <- Sync[F].delay(println(s"Program Exiting"))
           } yield ExitCode.Success
         }
-    }.handleVideoErrors()
+    }.handleAppError[DownloaderException]()
 
   def produceThumbnail[F[_]: Async](): F[ExitCode] =
     config.load[F].flatMap { cfg =>
@@ -90,6 +92,6 @@ object FMain {
         _             <- thumbnailer.create(videoFileName)
         _             <- Sync[F].delay(println(s"A thumbnail is produced, exiting program"))
       } yield ExitCode.Success
-    }.handleMetadataErrors()
+    }.handleAppError[ThumbnailException]()
 
 }
