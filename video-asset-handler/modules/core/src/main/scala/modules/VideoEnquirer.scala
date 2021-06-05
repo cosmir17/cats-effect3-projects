@@ -11,19 +11,20 @@ import config.environments.AppEnvironment
 import config.environments.AppEnvironment.Test
 import domain.video.VideoCorrupted
 import modules.HashConverter.Hashes
+import org.typelevel.log4cats.Logger
 import scodec.bits.ByteVector
 
 import java.nio.file.{Files, Paths}
 
 object VideoEnquirer {
-  def make[F[_]: Async](
+  def make[F[_]: Async : Logger](
       clients: HttpClients[F],
       appEnv: AppEnvironment
   ): VideoEnquirer[F] =
     new VideoEnquirer[F](clients, appEnv) {}
 }
 
-class VideoEnquirer[F[_]: Async] private (
+class VideoEnquirer[F[_]: Async : Logger] private (
     clients: HttpClients[F],
     appEnv: AppEnvironment
 ) {
@@ -41,10 +42,10 @@ class VideoEnquirer[F[_]: Async] private (
 
   def saveAsFile(videoResource: Resource[F, BufferedInputStream]): F[Unit] =
     for {
-      _        <- Sync[F].delay(println(s"Please enter a file name you desire. the format would be 'mov' automatically"))
+      _        <- Logger[F].info(s"Please enter a file name you desire. the format would be 'mov' automatically")
       fileName <- appEnv match { case Test => Sync[F].delay("test_video_file"); case _ => Console.make.readLine }
       _        <- videoResource.use(i => Sync[F].delay(Files.copy(i, Paths.get(fileName + ".mov"))))
-      _        <- Sync[F].delay(println(s"File saved as $fileName.mov"))
+      _        <- Logger[F].info(s"File saved as $fileName.mov")
     } yield ()
 
   def entityBodyToResource(b: ByteVector): Resource[F, BufferedInputStream] =
@@ -59,7 +60,7 @@ class VideoEnquirer[F[_]: Async] private (
   private def queryMetadata(assetId: String): F[MetaData] = clients.metaDataQuerier.query(assetId)
 
   private def validCase(hash: String): F[Unit] =
-    Sync[F].delay(println(s"the video is valid according to $hash hash validation")) *> Sync[F].unit
+    Logger[F].info(s"the video is valid according to $hash hash validation") *> Sync[F].unit
 
   private def invalidCase(hash: String): F[Unit] =
     Sync[F].raiseError(VideoCorrupted(s"the video's is invalid as it's hash doesn't match to " +

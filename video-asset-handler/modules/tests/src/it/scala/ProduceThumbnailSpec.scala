@@ -21,12 +21,12 @@ object ProduceThumbnailSpec extends SimpleIOSuite with IOMatchers {
       _       <- IO(new java.io.File("test_thumbnail.png").delete())
       _       <- IO(FileUtils.copyFile(videoFile, copiedFile)) //temporarily coping a video file for thumbnail production
       result  <- FMain.produceThumbnail()
-      _       =  expect(result == ExitCode.Success).failFast
+      rTest   =  expect(result == ExitCode.Success)
       files   <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_thumbnail.png").toList)
-      created <- IO(expect(files.nonEmpty))
+      created =  expect(files.nonEmpty)
       _       <- IO(copiedFile.delete())
       _       <- IO(new java.io.File("test_thumbnail.png").delete())
-    } yield created
+    } yield rTest and created
   }
 
   test("should have a video file produced before running Thumbnailer. " +
@@ -40,10 +40,10 @@ object ProduceThumbnailSpec extends SimpleIOSuite with IOMatchers {
         case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _       =  expect(result == ExitCode.Error).failFast
+      rTest   =  expect(result == ExitCode.Error)
       files   <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_thumbnail.png").toList)
-      created <- IO(expect(files.isEmpty))
+      created =  expect(files.isEmpty)
       _       <- IO(copiedFile.delete())
-    } yield created
+    } yield rTest and created
   }
 }

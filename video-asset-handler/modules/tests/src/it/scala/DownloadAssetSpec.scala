@@ -47,12 +47,12 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       _       <- stubOne
       _       <- stubTwo
       result  <- FMain.downloadAsset("valid")
-      _       =  expect(result == ExitCode.Success).failFast
+      rTest   =  expect(result == ExitCode.Success)
       file    <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       created <- IO(expect(file.nonEmpty))
       _       <- IO(new File("test_video_file.mov").delete())
       _       <- IO(wireMockServer.stop())
-    } yield created
+    } yield rTest and created
   }
 
   test("downloadAsset should not pass when a hash validation fails for crc32 and md5") {
@@ -79,12 +79,12 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       _       <- stubOne
       _       <- stubTwo
       result  <- FMain.downloadAsset("valid")
-      _       =  expect(result == ExitCode.Error).failFast
+      rTest   =  expect(result == ExitCode.Error)
       file    <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
-      created <- IO(expect(file.isEmpty))
+      created =  expect(file.isEmpty)
       _       <- IO(new File("test_video_file.mov").delete())
       _       <- IO(wireMockServer.stop())
-    } yield created
+    } yield rTest and created
   }
 
   test("should make http requests in parallel") {
@@ -118,13 +118,13 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       result      <- FMain.downloadAsset("valid")
       end         <- IO.realTime
       processTime =  end.minus(initial).toMillis
-      _           <- expect(processTime < 1500L).failFast
-      _           =  expect(result == ExitCode.Success).failFast
+      ptTest      =  expect(processTime < 1500L)
+      rTest       =  expect(result == ExitCode.Success)
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
-      created     <- IO(expect(file.nonEmpty))
+      created     =  expect(file.nonEmpty)
       _           <- IO(new File("test_video_file.mov").delete())
       _           <- IO(wireMockServer.stop())
-    } yield created
+    } yield ptTest and rTest and created
   }
 
   test("downloadAsset should not pass for invalid asset-id") {
@@ -154,12 +154,12 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _            =  expect(result == ExitCode.Error).failFast
+      rTest        =  expect(result == ExitCode.Error)
       file         <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
-      notCreated   <- IO(expect(file.isEmpty))
+      notCreated   =  expect(file.isEmpty)
       _            <- IO(new File("test_video_file.mov").delete())
       _            <- IO(wireMockServer.stop())
-    } yield notCreated
+    } yield rTest and notCreated
   }
 
   test("downloadAsset should not pass for an asset-id without a valid video file in the server") {
@@ -186,12 +186,12 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _           =  expect(result == ExitCode.Error).failFast
+      rTest       =  expect(result == ExitCode.Error)
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
-      notCreated  <- IO(expect(file.isEmpty))
+      notCreated  =  expect(file.isEmpty)
       _           <- IO(new File("test_video_file.mov").delete())
       _           <- IO(wireMockServer.stop())
-    } yield notCreated
+    } yield rTest and notCreated
   }
 
   test("downloadAsset should not pass for an empty id asset-id") {
@@ -221,12 +221,12 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
         case e: IllegalArgumentException if e.getMessage == "Asset ID can't be empty" => IO(success)
         case e => IO(failure("not an expected exception: " + e.toString))
       }
-      _           =  expect(result == ExitCode.Error).failFast
+      rTest       =  expect(result == ExitCode.Error)
       file        <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
-      notCreated  <- IO(expect(file.isEmpty))
+      notCreated  =  expect(file.isEmpty)
       _           <- IO(new File("test_video_file.mov").delete())
       _           <- IO(wireMockServer.stop())
-    } yield notCreated
+    } yield rTest and notCreated
   }
 
 

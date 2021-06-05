@@ -6,6 +6,7 @@ import cats.effect._
 import domain.AppExceptionHandler._
 import domain.downloader.DownloaderException
 import domain.thumbnail.ThumbnailException
+import org.typelevel.log4cats.Logger
 import resources.AppResources
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
@@ -63,7 +64,7 @@ object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header 
 
 object FMain {
 
-  def downloadAsset[F[_]: Async](assetId: String): F[ExitCode] =
+  def downloadAsset[F[_]: Async : Logger](assetId: String): F[ExitCode] =
     config.load[F].flatMap { cfg =>
       AppResources
         .make[F](cfg)
@@ -71,26 +72,26 @@ object FMain {
         .use { clients =>
           val checker = VideoEnquirer.make[F](clients, cfg.appEnv)
           for {
-            _             <- Sync[F].delay(println())
-            _             <- Sync[F].delay(println(s"Sending a download request to the ${cfg.vcURIConfig} endpoints"))
+            _             <- Logger[F].info("")
+            _             <- Logger[F].info(s"Sending a download request to the ${cfg.vcURIConfig} endpoints")
             _             <- if (assetId == "") Sync[F].raiseError(new IllegalArgumentException("Asset ID can't be empty"))
                              else Sync[F].unit
             videoResource <- checker.downloadAndCheckIntegrity(assetId)
             _             <- checker.saveAsFile(videoResource)
-            _             <- Sync[F].delay(println(s"Program Exiting"))
+            _             <- Logger[F].info(s"Program Exiting")
           } yield ExitCode.Success
         }
     }.handleAppError[DownloaderException]()
 
-  def produceThumbnail[F[_]: Async](): F[ExitCode] =
+  def produceThumbnail[F[_]: Async : Logger](): F[ExitCode] =
     config.load[F].flatMap { cfg =>
       val thumbnailer = Thumbnailer.make[F](cfg.appEnv)
       for {
-        _             <- Sync[F].delay(println())
-        _             <- Sync[F].delay(println(s"Starting thumbnail producer.."))
+        _             <- Logger[F].info("")
+        _             <- Logger[F].info(s"Starting thumbnail producer..")
         videoFileName <- thumbnailer.choseFile()
         _             <- thumbnailer.create(videoFileName)
-        _             <- Sync[F].delay(println(s"A thumbnail is produced, exiting program"))
+        _             <- Logger[F].info(s"A thumbnail is produced, exiting program")
       } yield ExitCode.Success
     }.handleAppError[ThumbnailException]()
 

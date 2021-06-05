@@ -18,7 +18,6 @@ object Dependencies {
     val newtype       = "0.4.4"
     val refined       = "0.9.26"
     val squants       = "1.8.0"
-    val slf4j         = "1.7.30"
 
     val betterMonadicFor = "0.3.1"
     val kindProjector    = "0.13.0"
@@ -72,8 +71,9 @@ object Dependencies {
     val refinedCore = "eu.timepit" %% "refined"      % V.refined
     val refinedCats = "eu.timepit" %% "refined-cats" % V.refined
 
-    val log4cats = "org.typelevel" %% "log4cats-slf4j" % V.log4cats
-    val newtype  = "io.estatico"   %% "newtype"        % V.newtype
+    val log4cats        = "org.typelevel" %% "log4cats-slf4j" % V.log4cats
+    val log4catsTesting = "org.typelevel" %% "log4cats-testing" % V.log4cats
+    val newtype         = "io.estatico"   %% "newtype"        % V.newtype
 
     val javaxCrypto = "javax.xml.crypto" % "jsr105-api" % V.javaxCrypto
 
@@ -81,8 +81,7 @@ object Dependencies {
     val apacheCodec = "commons-codec" % "commons-codec" % V.apacheCodec
 
     // Runtime
-    val slf4j         = "org.slf4j"      % "slf4j-api"       % V.slf4j
-    val slf4jSimple   = "org.slf4j"      % "slf4j-simple"    % V.slf4j
+    val logback  = "ch.qos.logback" % "logback-classic" % V.logback
 
     // Test
     val catsLaws         = "org.typelevel"              %% "cats-laws"         % V.cats
