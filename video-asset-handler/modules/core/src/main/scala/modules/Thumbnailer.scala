@@ -26,7 +26,7 @@ class Thumbnailer[F[_]: Sync : Logger] private (appEnv: AppEnvironment) {
       _             <- if (files.isEmpty) Sync[F].raiseError(VideoFilesDoNotExist("no video file is present"))
                        else Logger[F].info(s"Listing video files")
       _             <- Logger[F].info(s"_______________________________________________________")
-      _             <- Sync[F].delay(files.foreach(file => Logger[F].info(s"${file.getName}")))
+      _             <- files.map(file => Logger[F].info(s"${file.getName}")).traverse(identity)
       _             <- Logger[F].info(s"_______________________________________________________")
       _             <- Logger[F].info(s"type the name of a video file you like for a thumbnail")
       videoFileName <- if (isTest) Sync[F].delay("test_video_file.mov") else Console.make.readLine
