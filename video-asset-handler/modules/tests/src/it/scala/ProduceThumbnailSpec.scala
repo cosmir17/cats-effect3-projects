@@ -1,7 +1,6 @@
 import cats.effect.{ExitCode, IO}
 import domain.video.VideoCorrupted
 import org.apache.commons.io.FileUtils
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.testing.TestingLogger
 import org.typelevel.log4cats.testing.TestingLogger._
 import weaver.SimpleIOSuite
