@@ -1,6 +1,8 @@
+![Build Status](https://codebuild.eu-west-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRXZQd0xpZGFkUk9kOG40M0EwRmEwNFV3cVhsT3pBUzY1bk0yczZlMjZpOFFVKy9jWm5lUENreFNwbXNyM2VKZlp3emVDZHM1RmlOdEtSb0NNekpkRHRRPSIsIml2UGFyYW1ldGVyU3BlYyI6IjdibFpPWmRLR0lsK0wzT3UiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+
 Sean's Video Handler
 =============
-This project uses Cats Effect 3, Cats, Http4s and Decline
+This project uses Cats Effect 3, Cats, Http4s and Decline. This project requires `ffmpeg` to be installed locally.
 
 ## Components Overview
 Here's an overview of the three different components that make this application.

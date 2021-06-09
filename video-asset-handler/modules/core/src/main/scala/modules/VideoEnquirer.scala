@@ -9,7 +9,6 @@ import cats.effect.Resource
 import cats.effect.std.Console
 import config.environments.AppEnvironment
 import config.environments.AppEnvironment.Test
-import modules.HashHandler.Hashes
 import org.typelevel.log4cats.Logger
 import scodec.bits.ByteVector
 

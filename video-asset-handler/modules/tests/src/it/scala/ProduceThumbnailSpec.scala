@@ -12,7 +12,7 @@ object ProduceThumbnailSpec extends SimpleIOSuite with IOMatchers {
 
   override def maxParallelism = 1
 
-  test("should produce a thumbnail of a video file") {
+  test("should produce a thumbnail of a video file: ffmpeg has to be installed locally") {
     implicit val logger = TestingLogger.impl()
     val videoFile  =  new java.io.File("src/it/resources/server_path/__files/rabbit.mov")
     val copiedFile  =  new java.io.File("test_video_file.mov")
@@ -37,7 +37,7 @@ object ProduceThumbnailSpec extends SimpleIOSuite with IOMatchers {
   }
 
   test("should have a video file produced before running Thumbnailer. " +
-    "FMain.downloadAsset method should run first and prepare a video file") {
+    "FMain.downloadAsset method should run first and prepare a video file: ffmpeg has to be installed locally ") {
     implicit val logger = TestingLogger.impl()
     val copiedFile  =  new java.io.File("test_video_file.mov")
 
