@@ -21,6 +21,11 @@ Please run it with a command. There are two choices.
 
 You need to have a video file in '.mov' format in the same location as you run the second command. Otherwise, you will end up with an error message.
 I have attached two screenshots running the app. This is a graphical aid.
+![alt text](app_execution_main_banner_without_command_argument.png)
+Supplying `download-asset` argument
+![alt text](app_execution_example1.png)
+Supplying `produce-thumbnail` argument
+![alt text](app_execution_example2.png)
 
 ## How to run Tests
 sbt clean it:test test
