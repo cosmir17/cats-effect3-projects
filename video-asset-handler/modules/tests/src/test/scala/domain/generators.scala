@@ -59,4 +59,13 @@ object generators {
       crc32         <- crc32
     } yield Hashes(sha1.value, sha256.value, md5.value, crc32.value)
 
+  val metaHashPairGen: Gen[(MetaData, Hashes)] = for {
+    sha1          <- sha1Gen
+    sha256        <- sha256Gen
+    md5           <- md5Gen
+    crc32         <- crc32
+    vq            <- videoQualityGen
+    vi            <- videoIdGen
+  } yield (MetaData(Sha1(sha1), Sha256(sha256), Md5(md5), Crc32(crc32), vq, vi), Hashes(sha1.value, sha256.value, md5.value, crc32.value))
+
 }
