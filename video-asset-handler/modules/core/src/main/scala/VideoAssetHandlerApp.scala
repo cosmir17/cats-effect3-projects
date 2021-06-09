@@ -1,7 +1,7 @@
 import com.monovore.decline.{Command, Opts}
 import cats.implicits._
 import com.monovore.decline.effect.CommandIOApp
-import modules.{HttpClients, Thumbnailer, VideoEnquirer}
+import modules.{HashHandler, HttpClients, Thumbnailer, VideoEnquirer}
 import cats.effect._
 import domain.AppExceptionHandler._
 import domain.downloader.DownloaderException
@@ -70,7 +70,8 @@ object FMain {
         .make[F](cfg)
         .map(res => HttpClients.make[F](cfg.vcURIConfig, res.client))
         .use { clients =>
-          val checker = VideoEnquirer.make[F](clients, cfg.appEnv)
+          val hashHandler = HashHandler.make[F]()
+          val checker = VideoEnquirer.make[F](clients, cfg.appEnv, hashHandler)
           for {
             _             <- Logger[F].info("")
             _             <- Logger[F].info(s"Sending a download request to the ${cfg.vcURIConfig} endpoints")
