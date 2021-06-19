@@ -4,7 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import domain.video.VideoCorrupted
-import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.testing.TestingLogger
+import org.typelevel.log4cats.testing.TestingLogger._
 import weaver.SimpleIOSuite
 import weaver.specs2compat.IOMatchers
 
@@ -21,9 +22,9 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
     .port(Port)
   )
 
-  implicit val logger = Slf4jLogger.getLogger[IO]
-
   test("downloadAsset should pass for valid asset-id") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = "valid"
@@ -56,6 +57,8 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
   }
 
   test("downloadAsset should not pass when a hash validation fails for crc32 and md5") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = "valid"
@@ -88,6 +91,8 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
   }
 
   test("should make http requests in parallel") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = "valid"
@@ -128,6 +133,8 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
   }
 
   test("downloadAsset should not pass for invalid asset-id") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = "invalid"
@@ -150,19 +157,25 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
       _            <- wm
       _            <- stubOne
       _            <- stubTwo
-      result       <- FMain.downloadAsset("invalid").handleErrorWith {
-        case VideoCorrupted("the video is invalid, the program exits") => IO(ExitCode.Success);
-        case e => IO(failure("not an expected exception: " + e.toString))
-      }
+      result       <- FMain.downloadAsset("invalid")
+      logs         <- logger.logged
+      _            =  println(logs.mkString(","))
+      sending      =  logs.exists { case INFO(a, None) => a.contains("Sending a download request to the"); case _ => false }
+      decodingErMsg=  logs.exists { case ERROR(a, None) => a.contains("Invalid message body: Could not decode JSON"); case _ => false }
+      contained2   =  logs.exists { case ERROR(a, None) => a.contains("It's not a valid video, Hash validation failed, the video's is invalid as it's hash doesn't match to the sha1 hash in the metadata response"); case _ => false }
+      contained3   =  logs.exists { case ERROR(a, None) => a.contains("Exiting the program"); case _ => false }
+      logTest      =  expect(sending & !decodingErMsg & contained2 & contained3)
       rTest        =  expect(result == ExitCode.Error)
       file         <- IO(new File(".").listFiles.filter(_.isFile).filter(_.getName == "test_video_file.mov").toList)
       notCreated   =  expect(file.isEmpty)
       _            <- IO(new File("test_video_file.mov").delete())
       _            <- IO(wireMockServer.stop())
-    } yield rTest and notCreated
+    } yield logTest and rTest and notCreated
   }
 
   test("downloadAsset should not pass for an asset-id without a valid video file in the server") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = "valid"
@@ -194,7 +207,9 @@ object DownloadAssetSpec extends SimpleIOSuite with IOMatchers {
     } yield rTest and notCreated
   }
 
-  test("downloadAsset should not pass for an empty id asset-id") {
+  test("downloadAsset should not pass for an empty asset-id") {
+    implicit val logger = TestingLogger.impl()
+
     val wm = IO(wireMockServer.start()) *> IO(WireMock.configureFor(Host, Port))
     val path = "/playground/"
     val assetId = ""
