@@ -73,13 +73,13 @@ object FMain {
           val hashHandler = HashHandler.make[F]()
           val checker = VideoEnquirer.make[F](clients, cfg.appEnv, hashHandler)
           for {
-            _             <- Logger[F].info("")
-            _             <- Logger[F].info(s"Sending a download request to the ${cfg.vcURIConfig} endpoints")
-            _             <- if (assetId == "") Sync[F].raiseError(new IllegalArgumentException("Asset ID can't be empty"))
-                             else Sync[F].unit
-            videoResource <- checker.downloadAndCheckIntegrity(assetId)
-            _             <- checker.saveAsFile(videoResource)
-            _             <- Logger[F].info(s"Program Exiting")
+            _               <- Logger[F].info("")
+            _               <- Logger[F].info(s"Sending a download request to the ${cfg.vcURIConfig} endpoints")
+            _               <- if (assetId == "") Sync[F].raiseError(new IllegalArgumentException("Asset ID can't be empty"))
+                               else Sync[F].unit
+            videoResource   <- checker.downloadAndCheckIntegrity(assetId)
+            _               <- checker.saveAsFile(videoResource)
+            _               <- Logger[F].info(s"Program Exiting")
           } yield ExitCode.Success
         }
     }.handleAppError[DownloaderException]()
@@ -88,11 +88,11 @@ object FMain {
     config.load[F].flatMap { cfg =>
       val thumbnailer = Thumbnailer.make[F](cfg.appEnv)
       for {
-        _             <- Logger[F].info("")
-        _             <- Logger[F].info(s"Starting thumbnail producer..")
-        videoFileName <- thumbnailer.choseFile()
-        _             <- thumbnailer.create(videoFileName)
-        _             <- Logger[F].info(s"A thumbnail is produced, exiting program")
+        _               <- Logger[F].info("")
+        _               <- Logger[F].info(s"Starting thumbnail producer..")
+        videoFileName   <- thumbnailer.choseFile()
+        _               <- thumbnailer.create(videoFileName)
+        _               <- Logger[F].info(s"A thumbnail is produced, exiting program")
       } yield ExitCode.Success
     }.handleAppError[ThumbnailException]()
 

@@ -49,7 +49,7 @@ class VideoEnquirer[F[_]: Async : Logger] private (
     Resource.make {
       Sync[F].blocking(new BufferedInputStream(new ByteArrayInputStream(b.toArray))) // build
     } { inStream =>
-      Sync[F].blocking(inStream.close()).handleErrorWith(_ => Sync[F].unit) // release
+      Sync[F].blocking(inStream.close()).handleErrorWith(_ => Sync[F].unit)          // release
     }
 
   private def download(assetId: String): F[ByteVector] = clients.downloader.download(assetId)
