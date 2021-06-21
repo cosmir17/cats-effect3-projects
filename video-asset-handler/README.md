@@ -12,13 +12,21 @@ Here's an overview of the three different components that make this application.
 - Thumbnailer : Where a thumbnail of a video file can be produced.
 
 ## How to run
-The URL point was replaced to my mock aws endpoint. The intended URLs are to be added in Prod section in 'modules/core/src/main/scala/config/loader.scala' file.
+The URL point has been replaced to a mock AWS endpoint of mine that provides my own videos.
+The names of the available assets are 'valid' & 'invalid'. With those names, this application runs successfully.
+If you provide other names such as 'abcd', the app will terminate with an error message saying, 'requested asset-id doesn't exist'
+
+If you have the original intended URLs, it can be added in Prod section in 'modules/core/src/main/scala/config/loader.scala' file.
 
 VideoAssetHandlerApp is executable. Instructions get shown after the app runs. 
 Please run it with a command. There are two choices.
 
 1. download-asset <asset-id>
 2. produce-thumbnail
+
+e.g.
+download-asset valid
+produce-thumbnail valid.mov (after executing 'download-asset' command and save a video)
 
 You need to have a video file in '.mov' format in the same location as you run the second command. Otherwise, you will end up with an error message.
 I have attached two screenshots running the app. This is a graphical aid.
