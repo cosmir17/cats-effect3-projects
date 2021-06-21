@@ -119,6 +119,11 @@ object metadata {
   }
 
   @derive(eqv, show)
+  case class MetaDataHashMalformedException(msg: String)  extends MetaDataException(msg)  {
+    override def getConsoleMsg = "The hash data does not conform to the hash standard"
+  }
+
+  @derive(eqv, show)
   case class MetaDataNetworkException(msg: String) extends MetaDataException(msg) {
     override def getConsoleMsg = msg
   }

@@ -12,6 +12,8 @@ import org.http4s.{HttpRoutes, Response}
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 import domain.generators._
+import eu.timepit.refined.api.Refined
+import org.scalacheck.Gen
 
 object MetaDataClientSuite extends SimpleIOSuite with Checkers {
 
@@ -89,4 +91,39 @@ object MetaDataClientSuite extends SimpleIOSuite with Checkers {
     }
   }
 
+  test("Response Ok (200) but the hashes are malformed") {
+    val sha1Gen: Gen[Sha1Pred] = nonEmptyStringGen(10,20).map[Sha1Pred](Refined.unsafeApply)
+    val sha256Gen: Gen[Sha256Pred] = nonEmptyStringGen(30, 30).map[Sha256Pred](Refined.unsafeApply)
+    val md5Gen: Gen[Md5Pred] = nonEmptyStringGen(70, 70).map[Md5Pred](Refined.unsafeApply)
+    val crc32: Gen[Crc32Pred] = nonEmptyStringGen(10, 10).map[Crc32Pred](Refined.unsafeApply)
+
+    val metaDataGen: Gen[MetaData] =
+      for {
+        sha1          <- sha1Gen
+        sha256        <- sha256Gen
+        md5           <- md5Gen
+        crc32         <- crc32
+        vq            <- videoQualityGen
+        vi            <- videoIdGen
+      } yield MetaData(Sha1(sha1), Sha256(sha256), Md5(md5), Crc32(crc32), vq, vi)
+
+    val gen = for {
+      assetIdGen      <- nonEmptyStringGen(5, 20)
+      metaData        <- metaDataGen
+    } yield assetIdGen -> metaData
+
+    forall(gen) {
+      case (assetId, metaData) =>
+        val client = Client.fromHttpApp(routes(Ok(metaData)))
+
+        MetaDataClient
+          .make[IO](config, client)
+          .query(assetId)
+          .attempt
+          .map {
+            case Left(e)  => expect.same(MetaDataHashMalformedException("The hash data does not conform to the hash standard"), e)
+            case Right(_) => failure("expected metadata client error")
+          }
+    }
+  }
 }

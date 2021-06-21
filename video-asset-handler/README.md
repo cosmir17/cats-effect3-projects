@@ -12,10 +12,9 @@ Here's an overview of the three different components that make this application.
 - Thumbnailer : Where a thumbnail of a video file can be produced.
 
 ## How to run
-The URL points are removed. The intended URLs are to be added in Prod section in 'modules/core/src/main/scala/config/loader.scala' file.
-Once supplied, this application runs successfully. The integration and unit Tests run successfully without this config.
+The URL point was replaced to my mock aws endpoint. The intended URLs are to be added in Prod section in 'modules/core/src/main/scala/config/loader.scala' file.
 
-VideoAssetHandlerApp is executable. Instruction is shown after the app runs. 
+VideoAssetHandlerApp is executable. Instructions get shown after the app runs. 
 Please run it with a command. There are two choices.
 
 1. download-asset <asset-id>
@@ -31,6 +30,8 @@ Supplying `produce-thumbnail` argument
 
 ## How to run Tests
 sbt clean it:test test
+
+The integration and unit Tests run successfully. You can see the build badge.
 
 "VH_APP_ENV" is set as "test" in the build file.
 If you run the tests on intellij, you have to provide an environment variable "VH_APP_ENV" as "test".
