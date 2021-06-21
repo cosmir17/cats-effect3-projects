@@ -19,7 +19,7 @@ object load {
         case e @ Test =>
           default[F](VideoCompanyUrl("http://localhost:8080/playground"), e)
         case e @ Prod =>
-          default[F](VideoCompanyUrl("http://localhost:8080/playground"), e) //The URL point is removed
+          default[F](VideoCompanyUrl("https://5b2v0qmnkb.execute-api.eu-west-1.amazonaws.com/sean-video"), e)
       }
       .load[F]
 

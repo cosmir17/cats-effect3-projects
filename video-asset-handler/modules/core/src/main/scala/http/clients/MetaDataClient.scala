@@ -1,6 +1,6 @@
 package http.clients
 
-import cats.effect.Concurrent
+import cats.effect.{Async, Concurrent}
 import domain.metadata._
 import config.data.VideoUrlConfig
 import cats.syntax.all._
@@ -16,7 +16,9 @@ trait MetaDataClient[F[_]] {
 }
 
 object MetaDataClient {
-  def make[F[_]: JsonDecoder: Concurrent](cfg: VideoUrlConfig, client: Client[F]): MetaDataClient[F] =
+  val hashErrorMsg = "The hash data does not conform to the hash standard"
+
+  def make[F[_]: Async : JsonDecoder: Concurrent](cfg: VideoUrlConfig, client: Client[F]): MetaDataClient[F] =
     new MetaDataClient[F] with Http4sClientDsl[F] {
       def query(assetId: String): F[MetaData] =
         Uri.fromString(cfg.uri.value + s"/$assetId" + "/metadata").liftTo[F].flatMap { uri =>
@@ -32,6 +34,8 @@ object MetaDataClient {
                     .getOrElse("unknown")).raiseError[F, MetaData]
                 }
             }
+          }.adaptError {
+            case InvalidMessageBodyFailure(_, _) => MetaDataHashMalformedException(hashErrorMsg)
           }
         }
     }
