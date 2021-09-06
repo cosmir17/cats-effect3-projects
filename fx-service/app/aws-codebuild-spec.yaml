@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+       - apt update
+       - apt-get install build-essential -y
+       - apt-get install ffmpeg -y
+  build:
+    commands:
+       - cd fx-service
+       - sbt clean it:test test
