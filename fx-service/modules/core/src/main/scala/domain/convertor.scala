@@ -7,11 +7,7 @@ import domain.AppExceptionHandler.AppException
 import io.circe.{Decoder, DecodingFailure, Encoder, Json, KeyDecoder}
 import squants.market.{Currency, CurrencyExchangeRate, Money}
 import squants.market.defaultMoneyContext
-import cats.{Eq, MonadThrow, Monoid, Show}
-import io.circe.generic.auto._
-
-import io.circe.parser._
-import io.circe.syntax._
+import cats.{Eq, MonadThrow}
 
 import scala.util._
 
@@ -24,9 +20,10 @@ object convertor {
     override def apply(key: String): Option[Currency] = Currency(key).toOption
   }
 
-//  implicit val moneyDecoder = Decoder[Money]
   implicit val eq: Eq[Money] = Eq.fromUniversalEquals
-  implicit val moneyEncoder = Encoder[Money]
+  implicit val moneyEncoder = Encoder[Money] { (m: Money) =>
+    Json.fromString(m.amount.toString())
+  }
 
   implicit val currencyEncoder: Encoder[Currency] = Encoder[Currency] { (c: Currency) =>
     Json.fromString(c.code)
@@ -54,21 +51,21 @@ object convertor {
   //  convertor.execute
   //  POST /api/convert
   //  Body:
-  //    {
-  //      "fromCurrency": "GBP",
-  //      "toCurrency" : "EUR",
-  //      "amount" : 102.6
-  //    }
+//      {
+//        "fromCurrency": "GBP",
+//        "toCurrency" : "EUR",
+//        "amount" : 102.6
+//      }
 
   @derive(decoder)
   case class CurrencyResponse(currencies: Map[Currency, BigDecimal])
   //http://943r6.mocklab.io/exchange-rates/gbp
-  //{
-  //  "USD": 1.362250,
-  //  "EUR": 1.164659,
-  //  "CHF": 1.248216,
-  //  "CNY": 8.857225
-  //}
+//  {
+//    "USD": 1.362250,
+//    "EUR": 1.164659,
+//    "CHF": 1.248216,
+//    "CNY": 8.857225
+//  }
 
 
 

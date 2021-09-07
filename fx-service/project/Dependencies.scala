@@ -4,8 +4,8 @@ object Dependencies {
 
   object V {
     val cats          = "2.6.1"
-    val catsEffect    = "3.2.5"
-    val catsRetry     = "2.1.0"
+    val catsEffect    = "3.2.7"
+    val catsRetry     = "3.1.0"
     val circe         = "0.14.1"
     val ciris         = "2.1.1"
     val derevo        = "0.12.6"
@@ -19,7 +19,7 @@ object Dependencies {
     val squants       = "1.8.3"
 
     val betterMonadicFor = "0.3.1"
-    val kindProjector    = "0.13.1"
+    val kindProjector    = "0.13.2"
     val logback          = "1.2.5"
     val organizeImports  = "0.5.0"
     val apacheCodec      = "1.15"

@@ -18,9 +18,9 @@ object load {
       .as[AppEnvironment]
       .flatMap {
         case e @ Test =>
-          default[F](FxUrl("http://localhost:8080/exchange-rates"), e)
+          default[F](FxUrl("http://localhost:8080"), e)
         case e @ Prod =>
-          default[F](FxUrl("https://943r6.mocklab.io/exchange-rates"), e)
+          default[F](FxUrl("https://943r6.mocklab.io"), e)
       }
       .load[F]
 
