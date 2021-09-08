@@ -59,7 +59,7 @@ object convertor {
 
   @derive(decoder)
   case class CurrencyResponse(currencies: Map[Currency, BigDecimal])
-  //http://943r6.mocklab.io/exchange-rates/gbp
+  //http://943r6.mocklab.io/exchange-rates/GBP
 //  {
 //    "USD": 1.362250,
 //    "EUR": 1.164659,
