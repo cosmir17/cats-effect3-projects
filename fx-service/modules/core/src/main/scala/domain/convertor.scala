@@ -22,7 +22,7 @@ object convertor {
 
   implicit val eq: Eq[Money] = Eq.fromUniversalEquals
   implicit val moneyEncoder = Encoder[Money] { (m: Money) =>
-    Json.fromString(m.amount.toString())
+    Json.fromBigDecimal(m.amount)
   }
 
   implicit val currencyEncoder: Encoder[Currency] = Encoder[Currency] { (c: Currency) =>

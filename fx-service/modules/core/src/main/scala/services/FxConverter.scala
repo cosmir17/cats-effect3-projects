@@ -13,7 +13,7 @@ trait FxConverter[F[_]] {
 object FxConverter {
   def make[F[_]: Logger: MonadThrow](fx: FxClient[F]): FxConverter[F] =
     (fromCurrency: Currency, toCurrency: Currency, money: Money) => for {
-      currencies <- fx.query(fromCurrency.name)
+      currencies <- fx.query(fromCurrency.code)
       cFound = currencies.find(_._1 == toCurrency)
       cFoundRefined <- MonadThrow[F].fromOption(cFound, ResponseMalformedException("the response doesn't contain desired currency"))
       fx = CurrencyExchangeRate(fromCurrency(1), toCurrency(cFoundRefined._2))
