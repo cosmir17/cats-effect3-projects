@@ -61,8 +61,6 @@ object FxSpec200 extends HttpSuite {
                          |"original" : 102.6
                          |}""".stripMargin
 
-
-
     val req = Request[IO](method = Method.POST, uri = uri"/convert").withEntity(reqEntityBody)
 
     for {

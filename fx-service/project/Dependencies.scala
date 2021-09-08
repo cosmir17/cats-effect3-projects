@@ -24,6 +24,7 @@ object Dependencies {
     val organizeImports  = "0.5.0"
     val apacheCodec      = "1.15"
 
+    val mockito       = "1.16.39"
     val weaver        = "0.7.6"
     val specs2        = "4.11.0"
     val wiremock      = "2.27.2"
@@ -79,20 +80,21 @@ object Dependencies {
     val logback  = "ch.qos.logback" % "logback-classic" % V.logback
 
     // Test
-    val catsLaws         = "org.typelevel"              %% "cats-laws"         % V.cats
-    val log4catsNoOp     = "org.typelevel"              %% "log4cats-noop"     % V.log4cats
-    val monocleLaw       = "com.github.julien-truffaut" %% "monocle-law"       % V.monocle
-    val weaverCats       = "com.disneystreaming"        %% "weaver-cats"       % V.weaver
-    val weaverDiscipline = "com.disneystreaming"        %% "weaver-discipline" % V.weaver
-    val weaverScalaCheck = "com.disneystreaming"        %% "weaver-scalacheck" % V.weaver
-    val weaverSpecs      = "com.disneystreaming"        %% "weaver-specs2"     % V.weaver
-    val specs2           = "org.specs2"                 %% "specs2-core"       % V.specs2
-    val wiremock         = "com.github.tomakehurst"     %  "wiremock"          % V.wiremock
-    val spireMathCore    = "org.spire-math"             %% "antimirov-core"    % V.spireMath
-    val spireMathCheck   = "org.spire-math"             %% "antimirov-check"   % V.spireMath
-    val spireMathProps   = "org.spire-math"             %% "antimirov-props"   % V.spireMath
-    val apacheCommon     = "commons-io"                 %  "commons-io"        % V.apacheCommon
-    val scodecCats       = "org.scodec"                 %% "scodec-cats"       % V.scodecCats
+    val catsLaws         = "org.typelevel"              %% "cats-laws"          % V.cats
+    val log4catsNoOp     = "org.typelevel"              %% "log4cats-noop"      % V.log4cats
+    val monocleLaw       = "com.github.julien-truffaut" %% "monocle-law"        % V.monocle
+    val weaverCats       = "com.disneystreaming"        %% "weaver-cats"        % V.weaver
+    val weaverDiscipline = "com.disneystreaming"        %% "weaver-discipline"  % V.weaver
+    val weaverScalaCheck = "com.disneystreaming"        %% "weaver-scalacheck"  % V.weaver
+    val weaverSpecs      = "com.disneystreaming"        %% "weaver-specs2"      % V.weaver
+    val specs2           = "org.specs2"                 %% "specs2-core"        % V.specs2
+    val wiremock         = "com.github.tomakehurst"     %  "wiremock"           % V.wiremock
+    val spireMathCore    = "org.spire-math"             %% "antimirov-core"     % V.spireMath
+    val spireMathCheck   = "org.spire-math"             %% "antimirov-check"    % V.spireMath
+    val spireMathProps   = "org.spire-math"             %% "antimirov-props"    % V.spireMath
+    val apacheCommon     = "commons-io"                 %  "commons-io"         % V.apacheCommon
+    val scodecCats       = "org.scodec"                 %% "scodec-cats"        % V.scodecCats
+    val mockito          = "org.mockito"                %% "mockito-scala-cats" % V.mockito
 
     // Scalafix rules
     val organizeImports = "com.github.liancheng" %% "organize-imports" % V.organizeImports

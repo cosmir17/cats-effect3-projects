@@ -5,9 +5,9 @@ import derevo.circe.magnolia.{decoder, encoder}
 import derevo.derive
 import domain.AppExceptionHandler.AppException
 import io.circe.{Decoder, DecodingFailure, Encoder, Json, KeyDecoder}
-import squants.market.{Currency, CurrencyExchangeRate, Money}
+import squants.market.{Currency, Money}
 import squants.market.defaultMoneyContext
-import cats.{Eq, MonadThrow}
+import cats.{Eq, MonadThrow, Show}
 
 import scala.util._
 
@@ -67,10 +67,8 @@ object convertor {
 //    "CNY": 8.857225
 //  }
 
-
-
-
-  @derive(encoder)
+  implicit val showMoney: Show[Money] = Show.fromToString
+  @derive(encoder, show)
   case class FxResponse(exchange: BigDecimal, amount: Money, original: BigDecimal)
 //  {
 //    "exchange" : 1.11,

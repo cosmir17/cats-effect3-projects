@@ -6,7 +6,7 @@ import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import weaver.scalacheck.Checkers
-import weaver.{Expectations, IOSuite, SimpleIOSuite}
+import weaver.{Expectations, IOSuite}
 
 trait HttpSuite extends IOSuite with Checkers {
 

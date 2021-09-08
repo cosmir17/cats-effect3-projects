@@ -39,6 +39,7 @@ lazy val tests = (project in file("modules/tests"))
       Libraries.weaverSpecs,
       Libraries.weaverScalaCheck,
       Libraries.wiremock,
+      Libraries.mockito,
       Libraries.specs2,
       Libraries.apacheCommon,
       Libraries.spireMathCore,
