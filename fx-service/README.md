@@ -1,3 +1,5 @@
+![Build Status](https://codebuild.eu-west-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiTkVYcmJnZWJEN3JzWU1ZMzBoUyt4UVg1bmo2ejByNndIQzUvVkZSaTA5NlRuMTkwb0tPUzNKV0l5bnFxQWNHOTJuY0Z0Qkx3U0VvQURJbHQrUHJtcmRJPSIsIml2UGFyYW1ldGVyU3BlYyI6IjBMTnh3VjdOdXlmUFUzQUciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+
 Sean's Foreign Exchange Service
 =============
 This project uses Cats Effect 3, Cats, Http4s and Decline.
