@@ -20,7 +20,7 @@ object load {
         case e @ Test =>
           default[F](FxUrl("http://localhost:8080"), e)
         case e @ Prod =>
-          default[F](FxUrl("https://943r6.mocklab.io"), e)
+          default[F](FxUrl("http://943r6.mocklab.io"), e)
       }
       .load[F]
 
