@@ -56,9 +56,9 @@ object FxSpec200 extends HttpSuite {
     //    val responseBody = "{\n\"exchange\":1.164659,\n\"amount\":119.4940134,\n\"original\":102.6\n}"
 
     val responseBody = """{
-                         |"exchange" : 1.164659,
-                         |"amount" : 119.4940134,
-                         |"original" : 102.6
+                         |  "exchange" : 1.164659,
+                         |  "amount" : 119.4940134,
+                         |  "original" : 102.6
                          |}""".stripMargin
 
     val req = Request[IO](method = Method.POST, uri = uri"/convert").withEntity(reqEntityBody)

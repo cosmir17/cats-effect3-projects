@@ -21,7 +21,7 @@ trait HttpSuite extends IOSuite with Checkers {
         resp.asJson.map { json =>
           // Expectations form a multiplicative Monoid but we can also use other combinators like `expect.all`
           expect.same(resp.status, expectedStatus) |+| expect
-            .same(json.dropNullValues, expectedBody.asJson.dropNullValues)
+            .same(json.dropNullValues.toString(), expectedBody)
         }
       case None => IO.pure(failure("route not found"))
     }

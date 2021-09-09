@@ -47,7 +47,7 @@ object FxSpec502 extends HttpSuite {
     val fxClient = FxClient.make[IO](FxUriConfig(FxUrl("http://localhost:8080")), client)
     val reqEntityBody = FxReq("GBP", "EUR", 102.6) //not ideal but circe doesn't like raw string value
 
-    val responseBody = """Server Error""".stripMargin
+    val responseBody = "\"Server Error\""
 
     val req = Request[IO](method = Method.POST, uri = uri"/convert").withEntity(reqEntityBody)
 
