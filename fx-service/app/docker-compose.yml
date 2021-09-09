@@ -1,0 +1,9 @@
+version: '0.0.1'
+services:
+  fx_service:
+    restart: always
+    image: fx-service:latest
+    network_mode: host
+    environment:
+      - DEBUG=false
+      - VH_APP_ENV=test
