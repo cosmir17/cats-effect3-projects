@@ -27,14 +27,17 @@ case class ConvertRoutes[F[_]: JsonDecoder: Logger : MonadThrow](
             .flatMap(Ok(_))
             .recoverWith {
               case BaseCurrencyNotFound(msg) =>
-                Logger[F].error(msg)
+                Logger[F].error(msg) *>
                 NotFound(s"Currency is not supported")
               case ResponseMalformedException(msg) =>
-                Logger[F].error(msg)
+                Logger[F].error(msg) *>
                 InternalServerError("Downstream server is not working properly")
               case FxClientNetworkException(msg) =>
-                Logger[F].error(msg)
+                Logger[F].error(msg) *>
                 BadGateway(msg)
+              case e =>
+                Logger[F].error(s"Unrecognised error: ${e.getStackTrace.mkString("\n")}") *>
+                InternalServerError(s"Unrecognised error, please contact the technical support team : ${e.getMessage}")
             }
         } yield result
       }

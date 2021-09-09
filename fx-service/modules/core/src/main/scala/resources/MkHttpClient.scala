@@ -21,6 +21,7 @@ object MkHttpClient {
       def newEmber(c: HttpClientConfig): Resource[F, Client[F]] =
         EmberClientBuilder
           .default[F]
+          .withoutTLSContext
           .withTimeout(c.timeout)
           .withIdleTimeInPool(c.idleTimeInPool)
           .build
