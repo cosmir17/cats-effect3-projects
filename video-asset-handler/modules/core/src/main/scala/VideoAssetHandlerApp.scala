@@ -1,12 +1,12 @@
 import com.monovore.decline.{Command, Opts}
-import cats.implicits._
+import cats.implicits.*
 import com.monovore.decline.effect.CommandIOApp
 import modules.{HashHandler, HttpClients, Thumbnailer, VideoEnquirer}
-import cats.effect._
-import domain.AppExceptionHandler._
+import cats.effect.*
+import domain.AppExceptionHandler.*
 import domain.downloader.DownloaderException
 import domain.thumbnail.ThumbnailException
-import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.{Logger, StructuredLogger}
 import resources.AppResources
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
@@ -33,7 +33,7 @@ object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header 
     |
     |Sean's Video Asset Handler Command Line Tool
     |""".stripMargin, version = "0.0.1") {
-  implicit val logger = Slf4jLogger.getLogger[IO]
+  given StructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   sealed trait Cmd
   case class VideoAssetCmd(onlyQuery: Boolean, assetId: String) extends Cmd
@@ -43,7 +43,7 @@ object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header 
     Command(
       name = "download-asset",
       header = "download a video with an asset id from the server"
-    )(Opts.argument[String](metavar = "asset-id").map(FMain.downloadAsset[IO](_)))
+    )(Opts.argument[String](metavar = "asset-id").map(FMain.downloadAsset[IO]))
   }
 
   lazy val thumbnailAsset =
@@ -58,8 +58,7 @@ object VideoAssetHandlerApp extends CommandIOApp(name = "video-handler", header 
       thumbnailAsset
     )
 
-  override def main: Opts[IO[ExitCode]] =
-    command
+  override def main: Opts[IO[ExitCode]] = command
 }
 
 object FMain {
