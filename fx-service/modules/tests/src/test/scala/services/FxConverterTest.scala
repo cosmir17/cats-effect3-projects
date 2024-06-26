@@ -5,16 +5,13 @@ import domain.convertor.{FxClientNetworkException, FxResponse, ResponseMalformed
 import http.clients.FxClient
 import org.mockito.cats.IdiomaticMockitoCats
 import org.mockito.IdiomaticMockito
-import org.typelevel.log4cats.testing.TestingLogger
-import squants.market.{Currency, Money, defaultMoneyContext}
+import squants.market.{Currency, Money, MoneyContext, defaultMoneyContext}
 import weaver.SimpleIOSuite
 
 object FxConverterTest extends SimpleIOSuite with IdiomaticMockito with IdiomaticMockitoCats {
-  implicit val moneyContext = defaultMoneyContext
+  implicit val moneyContext: MoneyContext = defaultMoneyContext
 
   test("Should convert for valid data") {
-    implicit val logger = TestingLogger.impl()
-
     val fx = mock[FxClient[IO]]
     fx.query("GBP") returns IO { Map(Currency("USD").get -> 1.362250, Currency("EUR").get -> 1.164659,  Currency("CHF").get -> 1.248216) }
     val convertor = FxConverter.make[IO](fx)
@@ -25,8 +22,6 @@ object FxConverterTest extends SimpleIOSuite with IdiomaticMockito with Idiomati
   }
 
   test("Should fail for invalid data, the downstream call response doesn't contain a required currency") {
-    implicit val logger = TestingLogger.impl()
-
     val fx = mock[FxClient[IO]]
     fx.query("GBP") returns IO { Map(Currency("USD").get -> 1.362250, Currency("CHF").get -> 1.248216) }
     val convertor = FxConverter.make[IO](fx)
@@ -41,8 +36,6 @@ object FxConverterTest extends SimpleIOSuite with IdiomaticMockito with Idiomati
   }
 
   test("Should fail for invalid data, the downstream call fails") {
-    implicit val logger = TestingLogger.impl()
-
     val fx = mock[FxClient[IO]]
     fx.query("GBP") returns IO.raiseError(FxClientNetworkException("Network issue"))
     val convertor = FxConverter.make[IO](fx)

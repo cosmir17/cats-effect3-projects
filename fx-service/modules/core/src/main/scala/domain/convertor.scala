@@ -5,8 +5,7 @@ import derevo.circe.magnolia.{decoder, encoder}
 import derevo.derive
 import domain.AppExceptionHandler.AppException
 import io.circe.{Decoder, DecodingFailure, Encoder, Json, KeyDecoder}
-import squants.market.{Currency, Money}
-import squants.market.defaultMoneyContext
+import squants.market.{Currency, Money, MoneyContext, defaultMoneyContext}
 import cats.{Eq, MonadThrow, Show}
 
 import scala.util._
@@ -14,14 +13,14 @@ import scala.util._
 object convertor {
   implicit val currencyEq: Eq[Currency] = Eq.and(Eq.and(Eq.by(_.code), Eq.by(_.symbol)), Eq.by(_.name))
 
-  implicit val moneyContext = defaultMoneyContext
+  implicit val moneyContext: MoneyContext = defaultMoneyContext
 
   implicit val cKeyDecoder: KeyDecoder[Currency] = new KeyDecoder[Currency] {
     override def apply(key: String): Option[Currency] = Currency(key).toOption
   }
 
   implicit val eq: Eq[Money] = Eq.fromUniversalEquals
-  implicit val moneyEncoder = Encoder[Money] { (m: Money) =>
+  implicit val moneyEncoder: Encoder[Money] = Encoder[Money] { (m: Money) =>
     Json.fromBigDecimal(m.amount)
   }
 

@@ -1,11 +1,10 @@
 package http.clients
 
 import domain.convertor._
-import cats.effect.{Async, Concurrent}
+import cats.effect.Async
 import config.data.FxUriConfig
 import cats.syntax.all._
 import eu.timepit.refined.auto._
-import io.circe.generic.auto._
 import org.http4s.Method._
 import org.http4s._
 import org.http4s.circe._
@@ -20,7 +19,7 @@ trait FxClient[F[_]] {
 object FxClient {
   val fxFormatErrorMsg = "The fx response data does not conform to the format we are expecting"
 
-  def make[F[_]: Async : JsonDecoder: Concurrent](cfg: FxUriConfig, client: Client[F]): FxClient[F] =
+  def make[F[_]: Async : JsonDecoder](cfg: FxUriConfig, client: Client[F]): FxClient[F] =
     new FxClient[F] with Http4sClientDsl[F] {
       def query(currency: String): F[Map[Currency, BigDecimal]] =
         Uri.fromString(cfg.uri.value + s"/exchange-rates/${currency.toUpperCase}").liftTo[F].flatMap { uri =>
