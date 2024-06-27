@@ -1,4 +1,4 @@
-# HTTP4S Kleisli Techniques with Cats Effect
+# Http4s Techniques with Cats Effect
 
 This repository contains various techniques and examples for using HTTP4S with Kleisli arrows in Cats Effect. These examples are collected from online resources, YouTube videos, and personal studies.
 
